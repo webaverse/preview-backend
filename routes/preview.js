@@ -46,6 +46,7 @@ const cbs = {};
 
 (async () => {
 browser = await browserManager.getBrowser();
+ticketManager = browserManager.makeTicketManager(4);
 
 const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -142,12 +143,13 @@ const _handlePreviewRequest = async (req, res) => {
       res.setHeader('Content-Type', contentType);
       res.end(o.Body);
     } else {
+      await ticketManager.lock();
+
       const p = _makePromise()
       const index = ++cbIndex;
       cbs[index] = p.accept.bind(p);
 
       let page;
-
       try {
         // console.log('preview 3');
         page = await browser.newPage();
@@ -208,6 +210,8 @@ const _handlePreviewRequest = async (req, res) => {
       } catch (err) {
         console.warn(err.stack);
       } finally {
+        ticketManager.unlock();
+
         if (page) {
           page.close();
         }

@@ -11,8 +11,45 @@ const browserPromise = puppeteer.launch({
   headless: true,
 });
 
+const _makePromise = () => {
+  let accept, reject;
+  const p = new Promise((a, r) => {
+    accept = a;
+    reject = r;
+  });
+  p.accept = accept;
+  p.reject = reject;
+  return p;
+};
+
+class TicketManager {
+  constructor(tickets) {
+    this.tickets = tickets;
+    this.queue = [];
+  }
+  async lock() {
+    if (this.tickets > 0) {
+      this.tickets--;
+    } else {
+      const p = _makePromise();
+      this.queue.push(p.accept);
+      await p;
+      await this.lock();
+    }
+  }
+  unlock() {
+    this.tickets++;
+    if (this.queue.length > 0) {
+      this.queue.shift()();
+    }
+  }
+}
+
 module.exports = {
   async getBrowser() {
     return await browserPromise;
+  },
+  makeTicketManager(tickets) {
+    return new TicketManager(tickets);
   },
 };
