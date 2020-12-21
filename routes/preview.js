@@ -146,49 +146,71 @@ const _handlePreviewRequest = async (req, res) => {
       const index = ++cbIndex;
       cbs[index] = p.accept.bind(p);
 
-      // console.log('preview 3');
-      const page = await browser.newPage();
-      // console.log('preview 4');
-      page.on('console', e => {
-        console.log(e);
-      });
-      page.on('error', err => {
-        console.log(err);
-      });
-      page.on('pageerror', err => {
-        console.log(err);
-      });
-      // console.log('load 1', hash, ext, type);
-      await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
-      // console.log('load 2');
+      let page;
 
-      const {req: proxyReq, res: proxyRes} = await p;
+      try {
+        // console.log('preview 3');
+        page = await browser.newPage();
+        // console.log('preview 4');
+        page.on('console', e => {
+          console.log(e);
+        });
+        page.on('error', err => {
+          console.log(err);
+        });
+        page.on('pageerror', err => {
+          console.log(err);
+        });
 
-      // console.log('load 3');
+        let timeout;
+        const t = new Promise((accept, reject) => {
+          timeout = setTimeout(() => {
+            reject('timed out');
+          }, 10 * 1000);
+        });
 
-      // proxyReq.headers['content-type'] || 'application/octet-stream';
-      res.setHeader('Content-Type', contentType);
-      proxyReq.pipe(res);
+        const {
+          req: proxyReq,
+          res: proxyRes,
+        } = await Promise.race([
+          page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index)
+            .then(() => p),
+          t,
+        ]);
+        clearTimeout(timeout);
 
-      const bs = [];
-      proxyReq.on('data', d => {
-        bs.push(d);
-      });
-      await new Promise((accept, reject) => {
-        proxyReq.on('end', accept);
-      });
-      proxyRes.end();
-      page.close();
+        // console.log('load 3');
 
-      if (cache) {
-        const b = Buffer.concat(bs);
-        bs.length = 0;
-        await putObject(
-          bucketNames.preview,
-          key,
-          b,
-          contentType,
-        );
+        // proxyReq.headers['content-type'] || 'application/octet-stream';
+        res.setHeader('Content-Type', contentType);
+        proxyReq.pipe(res);
+
+        const bs = [];
+        proxyReq.on('data', d => {
+          bs.push(d);
+        });
+        await new Promise((accept, reject) => {
+          proxyReq.on('end', accept);
+        });
+        proxyRes.end();
+        page.close();
+
+        if (cache) {
+          const b = Buffer.concat(bs);
+          bs.length = 0;
+          await putObject(
+            bucketNames.preview,
+            key,
+            b,
+            contentType,
+          );
+        }
+      } catch (err) {
+        console.warn(err.stack);
+      } finally {
+        if (page) {
+          page.close();
+        }
       }
     }
   } else {
