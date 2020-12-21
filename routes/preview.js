@@ -195,7 +195,7 @@ const _handlePreviewRequest = async (req, res) => {
           proxyReq.on('end', accept);
         });
         proxyRes.end();
-        page.close();
+        // page.close();
 
         if (cache) {
           const b = Buffer.concat(bs);
