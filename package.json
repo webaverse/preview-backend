@@ -25,6 +25,7 @@
     "forever": "^3.0.0"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "mime": "^2.4.7"
   }
 }
