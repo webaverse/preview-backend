@@ -21,6 +21,9 @@
     "url": "https://github.com/modulesio/webaverse-server/issues"
   },
   "homepage": "https://github.com/modulesio/webaverse-server#readme",
+  "devDependencies": {
+    "forever": "^3.0.0"
+  },
   "dependencies": {
     "mime": "^2.4.7"
   }
