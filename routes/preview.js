@@ -20,7 +20,7 @@ const PREVIEW_PORT = 8999;
 const bucketNames = {
   preview: 'preview.exokit.org',
 };
-const storageHost = 'https://storage.exokit.org';
+const storageHost = 'https://ipfs.exokit.org';
 
 const _makePromise = () => {
   let accept, reject;
