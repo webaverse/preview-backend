@@ -167,46 +167,46 @@ const _handlePreviewRequest = async (req, res) => {
         let timeout;
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
-            reject('timed out');
+            reject(new Error('timed out'));
           }, 10 * 1000);
         });
 
-        const {
-          req: proxyReq,
-          res: proxyRes,
-        } = await Promise.race([
-          page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index)
-            .then(() => p),
+        const  = await Promise.race([
+          (async () => {
+            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            const const {
+              req: proxyReq,
+              res: proxyRes,
+            } = await p;
+
+            res.setHeader('Content-Type', contentType);
+            proxyReq.pipe(res);
+
+            const bs = [];
+            proxyReq.on('data', d => {
+              bs.push(d);
+            });
+            proxyReq.on('error', reject);
+            await new Promise((accept, reject) => {
+              proxyReq.on('end', accept);
+            });
+            proxyRes.end();
+            // page.close();
+
+            if (cache) {
+              const b = Buffer.concat(bs);
+              bs.length = 0;
+              await putObject(
+                bucketNames.preview,
+                key,
+                b,
+                contentType,
+              );
+            }
+          })(),
           t,
         ]);
         clearTimeout(timeout);
-
-        // console.log('load 3');
-
-        // proxyReq.headers['content-type'] || 'application/octet-stream';
-        res.setHeader('Content-Type', contentType);
-        proxyReq.pipe(res);
-
-        const bs = [];
-        proxyReq.on('data', d => {
-          bs.push(d);
-        });
-        await new Promise((accept, reject) => {
-          proxyReq.on('end', accept);
-        });
-        proxyRes.end();
-        // page.close();
-
-        if (cache) {
-          const b = Buffer.concat(bs);
-          bs.length = 0;
-          await putObject(
-            bucketNames.preview,
-            key,
-            b,
-            contentType,
-          );
-        }
       } catch (err) {
         console.warn(err.stack);
       } finally {
