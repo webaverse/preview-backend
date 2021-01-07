@@ -171,7 +171,7 @@ const _handlePreviewRequest = async (req, res) => {
           }, 10 * 1000);
         });
 
-        const  = await Promise.race([
+        await Promise.race([
           (async () => {
             await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const const {
