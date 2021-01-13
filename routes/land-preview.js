@@ -150,7 +150,7 @@ const _handleLandPreviewRequest = async (req, res) => {
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
             reject(new Error('timed out'));
-          }, 10 * 1000);
+          }, 30 * 1000);
         });
 
         await Promise.race([
