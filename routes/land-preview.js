@@ -88,13 +88,13 @@ const _handleLandPreviewRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
 
-  const u = new URL(req.url);
+  const u = req.url;
   const spec = (() => {
-    const path = u.pathname.split('/');
+    const path = u.split('/');
     if (path.length > 3) {
-      const z = match[1];
-      const x = match[2];
-      const y = match[3];
+      const z = path[1];
+      const x = path[2];
+      const y = path[3];
       return {
         z,
         x,
