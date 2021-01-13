@@ -155,7 +155,7 @@ const _handleLandPreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/map.html?dst=lol&x=${x}&y=${y}&sw=16&sh=${z}&dw=128&dh=128&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            await page.goto(`https://app.webaverse.com/map.html?x=${x}&y=${y}&sw=16&sh=${z}&dw=128&dh=128&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const {
               req: proxyReq,
               res: proxyRes,
