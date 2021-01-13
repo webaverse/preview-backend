@@ -56,7 +56,6 @@ const _req = protocol => (req, res) => {
       return;
     }
 
-
     res.statusCode = 404;
     res.end('host not found');
   } catch(err) {
