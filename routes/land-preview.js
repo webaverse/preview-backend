@@ -105,9 +105,9 @@ const _handleLandPreviewRequest = async (req, res) => {
   const {query = {}} = u;
   const cache = !query['nocache'];
   if (spec) {
-    const {url, hash, ext, type} = spec;
-    console.log('preview request', {hash, ext, type, cache});
-    const key = `${hash}/${ext}/${type}`;
+    const {z, x, y} = spec;
+    console.log('preview request', {z, x, y});
+    const key = `${z}/${x}/${y}`;
     const o = cache ? await (async () => {
       try {
         return await getObject(
@@ -119,7 +119,7 @@ const _handleLandPreviewRequest = async (req, res) => {
         return null;
       }
     })() : null;
-    const contentType = mime.getType(ext);
+    const contentType = 'image/png';
     if (o) {
       // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
       res.setHeader('Content-Type', contentType);
