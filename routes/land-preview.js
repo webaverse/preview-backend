@@ -15,7 +15,7 @@ const puppeteer = require('puppeteer');
 const browserManager = require('../browser-manager.js');
 
 const PREVIEW_HOST = '127.0.0.1';
-const PREVIEW_PORT = 8999;
+const PREVIEW_PORT = 8998;
 
 const bucketNames = {
   preview: 'land-preview.exokit.org',
@@ -107,7 +107,7 @@ const _handleLandPreviewRequest = async (req, res) => {
   if (spec) {
     const {z, x, y} = spec;
     console.log('preview request', {z, x, y});
-    const key = `${z}/${x}/${y}`;
+    const key = `parcels/${z}/${x}/${y}`;
     const o = cache ? await (async () => {
       try {
         return await getObject(
@@ -155,7 +155,7 @@ const _handleLandPreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/map.html?x=${x}&y=${y}&sw=16&sh=${z}&dw=128&dh=128&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            await page.goto(`https://app.webaverse.com/map.html?x=${x}&y=${y}&sw=${z}&sh=${z}&dw=128&dh=128&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const {
               req: proxyReq,
               res: proxyRes,
