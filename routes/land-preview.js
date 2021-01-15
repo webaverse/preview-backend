@@ -110,7 +110,7 @@ const _handleLandPreviewRequest = async (req, res) => {
   const cache = !query['nocache'];
   if (spec) {
     const {z, x, y} = spec;
-    const e = query;
+    const {e} = query;
     const key = `parcels/${z}/${x}/${y}${e ? `/${e}` : ''}`;
     const o = cache ? await (async () => {
       try {
