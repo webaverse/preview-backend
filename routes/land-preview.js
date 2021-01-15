@@ -88,18 +88,22 @@ const _handleLandPreviewRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
 
-  const u = req.url;
+  const u = url.parse(req.url, true);
   const spec = (() => {
-    const path = u.split('/');
-    if (path.length > 3) {
-      const z = path[1];
-      const x = path[2];
-      const y = path[3];
+    const match = u.path.match(/^\/(-?[0-9\.]+)\/(-?[0-9\.]+)\/(-?[0-9\.]+)\/$/);
+    if (match) {
+      const z = parseFloat(match[1]);
+      const x = parseFloat(match[2]);
+      const y = parseFloat(match[3]);
+      const e = match[4] || '';
       return {
         z,
         x,
         y,
+        e,
       };
+    } else {
+      return null;
     }
   })();
   const {query = {}} = u;
