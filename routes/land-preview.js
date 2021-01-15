@@ -110,8 +110,8 @@ const _handleLandPreviewRequest = async (req, res) => {
   const cache = !query['nocache'];
   if (spec) {
     const {z, x, y} = spec;
-    const {e} = query;
-    const key = `parcels/${z}/${x}/${y}${e ? `/${e}` : ''}`;
+    const {e, r} = query;
+    const key = `parcels/${z}/${x}/${y}/${e || ''}/${r || ''}`;
     const o = cache ? await (async () => {
       try {
         return await getObject(
@@ -159,7 +159,7 @@ const _handleLandPreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/map.html?x=${x}&y=${y}&sw=${z}&sh=${z}&dw=512&dh=512${e ? `&e=${e}` : ''}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            await page.goto(`https://app.webaverse.com/map.html?x=${x}&y=${y}&sw=${z}&sh=${z}&dw=512&dh=512${e ? `&e=${e}` : ''}${r ? `&r=${r}` : ''}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const {
               req: proxyReq,
               res: proxyRes,
