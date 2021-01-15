@@ -90,7 +90,7 @@ const _handleLandPreviewRequest = async (req, res) => {
 
   const u = url.parse(req.url, true);
   const spec = (() => {
-    const match = u.path.match(/^\/(-?[0-9\.]+)\/(-?[0-9\.]+)\/(-?[0-9\.]+)$/);
+    const match = u.pathname.match(/^\/(-?[0-9\.]+)\/(-?[0-9\.]+)\/(-?[0-9\.]+)$/);
     if (match) {
       const z = parseFloat(match[1]);
       const x = parseFloat(match[2]);
