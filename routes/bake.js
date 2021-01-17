@@ -88,7 +88,7 @@ const _handleBakeRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
 
-  const {query: {u, e, nocache} = {}} = url.parse(req.url, true);
+  const {pathname, query: {u, e, nocache} = {}} = url.parse(req.url, true);
   if (u && e) {
     const cache = nocache === undefined;
     const key = `${u}/${e}`;
@@ -146,7 +146,7 @@ const _handleBakeRequest = async (req, res) => {
             } = await p;
 
             res.setHeader('Content-Type', contentType);
-            res.setHeader('Content-Disposition', 'attachment;filename=model-baked.glb');
+            res.setHeader('Content-Disposition', 'attachment;filename=' + (pathname.slice(1) || 'model.glb'));
             proxyReq.pipe(res);
 
             const bs = [];
