@@ -37,6 +37,7 @@ const https = require('https');
 // const api = require('./api.js');
 const {_handlePreviewRequest} = require('./routes/preview.js')
 const {_handleLandPreviewRequest} = require('./routes/land-preview.js')
+const {_handleBakeRequest} = require('./routes/bake.js')
 
 const CERT = fs.readFileSync('./certs/fullchain.pem');
 const PRIVKEY = fs.readFileSync('./certs/privkey.pem');
@@ -53,6 +54,9 @@ const _req = protocol => (req, res) => {
       return;
     } else if (o.host === 'land-preview.exokit.org') {
       _handleLandPreviewRequest(req, res);
+      return;
+    } else if (o.host === 'bake.exokit.org') {
+      _handleBakeRequest(req, res);
       return;
     }
 
