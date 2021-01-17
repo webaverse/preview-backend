@@ -96,7 +96,7 @@ const _handleBakeRequest = async (req, res) => {
     const o = cache ? await (async () => {
       try {
         return await getObject(
-          bucketNames.preview,
+          bucketNames.bake,
           key,
         );
       } catch(err) {
