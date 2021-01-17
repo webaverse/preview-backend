@@ -146,6 +146,7 @@ const _handleBakeRequest = async (req, res) => {
             } = await p;
 
             res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', 'attachment;filename=model-baked.glb');
             proxyReq.pipe(res);
 
             const bs = [];
