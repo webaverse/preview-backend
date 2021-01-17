@@ -88,9 +88,7 @@ const _handleBakeRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
 
-  const u = url.parse(req.url, true);
-  const {query = {}} = u;
-  const {u, e} = query;
+  const {query: {u, e} = {}} = url.parse(req.url, true);
   if (u && e) {
     const key = `${u}/${e}`;
     const contentType = 'model/gltf-binary';
