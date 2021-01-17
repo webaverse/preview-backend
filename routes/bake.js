@@ -90,7 +90,7 @@ const _handleBakeRequest = async (req, res) => {
 
   const {query: {u, e, nocache} = {}} = url.parse(req.url, true);
   if (u && e) {
-    const cache = !nocache;
+    const cache = nocache === undefined;
     const key = `${u}/${e}`;
     const contentType = 'model/gltf-binary';
     const o = cache ? await (async () => {
