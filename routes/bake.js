@@ -88,9 +88,9 @@ const _handleBakeRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
 
-  const {query: {u, e} = {}} = url.parse(req.url, true);
+  const {query: {u, e, nocache} = {}} = url.parse(req.url, true);
   if (u && e) {
-    const cache = !query['nocache'];
+    const cache = !nocache;
     const key = `${u}/${e}`;
     const contentType = 'model/gltf-binary';
     const o = cache ? await (async () => {
