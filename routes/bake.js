@@ -139,7 +139,7 @@ const _handleBakeRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/bake.html?u=${u}&e=${e}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            await page.goto(`http://127.0.0.1:3000/bake.html?u=${u}&e=${e}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const {
               req: proxyReq,
               res: proxyRes,
