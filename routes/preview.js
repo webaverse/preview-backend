@@ -1,227 +1,235 @@
-const path = require('path');
-const stream = require('stream');
-const fs = require('fs');
-const url = require('url');
-const querystring = require('querystring');
 const http = require('http');
-const https = require('https');
-const crypto = require('crypto');
-const zlib = require('zlib');
-const child_process = require('child_process');
 const mime = require('mime');
 
-const {getObject, putObject} = require('../aws.js');
-const puppeteer = require('puppeteer');
+const {getObjectOrNull, putObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
+const {appURL} = require('../const.js');
+const {
+  makePromise,
+  timeoutCallback,
+} = require('../lib/async.js');
+const {
+  handle404,
+  handleOptions,
+  promisifyRequest,
+  setHeaders,
+} = require('../lib/request.js');
+const { getURLParams } = require( '../lib/utils.js' )
 
 const PREVIEW_HOST = '127.0.0.1';
 const PREVIEW_PORT = 8999;
 
-const bucketNames = {
-  preview: 'preview.exokit.org',
-};
+const bucketNames = { preview: 'preview.exokit.org' };
 const storageHost = 'https://ipfs.exokit.org';
 
-const _makePromise = () => {
-  let accept, reject;
-  const p = new Promise((a, r) => {
-    accept = a;
-    reject = r;
-  });
-  p.accept = accept;
-  p.reject = reject;
-  return p;
-};
+const idRegex = /^\/([0-9]+)/;
+const queryA = /^\/\[([^\]]+)\.([^\].]+)]\/([^.]+)\.(.+)$/;
+const queryB = /^\/([^.]+)\.([^\/]+)\/([^.]+)\.(.+)$/;
 
-const _warn = err => {
-  console.warn('uncaught: ' + err.stack);
-};
-process.on('uncaughtException', _warn);
-process.on('unhandledRejection', _warn);
+const headers = [
+  ['Access-Control-Allow-Origin', '*'],
+  ['Access-Control-Allow-Headers', '*'],
+  ['Access-Control-Allow-Methods', '*'],
+]
 
-let browser;
-const serverPromise = _makePromise();
+// Add request callbacks to a table to resolve later.
 let cbIndex = 0;
 const cbs = {};
 
-(async () => {
-browser = await browserManager.getBrowser();
-ticketManager = browserManager.makeTicketManager(4);
+// Render previews in a browser to keep them as close to in-game as possible.
+let browser;
+let ticketManager;
 
-const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Methods', '*');
-  if (req.method === 'OPTIONS') {
-    res.end();
-  } else if (req.method === 'POST') {
-    const match = req.url.match(/^\/([0-9]+)/);
-    // console.log('callback server 1', req.url, !!match);
-    if (match) {
-      const index = parseInt(match[1], 10);
-      const cb = cbs[index];
-      // console.log('callback server 2', req.url, index, !!cb);
-      if (cb) {
-        delete cbs[index];
-        cb({req, res});
-      } else {
-        res.statusCode = 404;
-        res.end();
-      }
-    } else {
-      res.statusCode = 404;
-      res.end();
-    }
-  } else {
-    res.statusCode = 404;
-    res.end();
-  }
-});
-server.on('error', serverPromise.reject.bind(serverPromise));
-server.listen(PREVIEW_PORT, PREVIEW_HOST, serverPromise.accept.bind(serverPromise));
-})();
+// Make sure the server is loaded before handling any requests.
+const {
+  promise: serverPromise,
+  resolve,
+  reject
+} = makePromise();
 
-const _handlePreviewRequest = async (req, res) => {
+process.on('uncaughtException', console.error);
+process.on('unhandledRejection', console.error);
+
+init().catch(console.error)
+
+async function _handlePreviewRequest(req, res, url) {
   await serverPromise;
+  setHeaders(res, headers);
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Methods', '*');
+  await getPreview(res, url);
+}
 
-  const u = url.parse(req.url, true);
-  const spec = (() => {
-    const match = u.pathname.match(/^\/\[([^\]]+)\.([^\].]+)\]\/([^\.]+)\.(.+)$/);
-    if (match) {
-      const url = match[1] + '.' + match[2];
-      const hash = match[1];
-      const ext = match[2].toLowerCase();
-      const type = match[4].toLowerCase();
-      return {
-        url,
-        hash,
-        ext,
-        type,
-      };
-    } else {
-      const match = u.pathname.match(/^\/([^\.]+)\.([^\/]+)\/([^\.]+)\.(.+)$/);
-      if (match) {
-        const hash = match[1];
-        const ext = match[2].toLowerCase();
-        const type = match[4].toLowerCase();
-        const url = `${storageHost}/${hash}`;
-        return {
-          url,
-          hash,
-          ext,
-          type,
-        };
-      } else {
-        return null;
-      }
+async function init() {
+  browser = await browserManager.getBrowser();
+  ticketManager = browserManager.makeTicketManager(4);
+
+  const server = createServer();
+
+  server.on('error', reject);
+  server.listen(PREVIEW_PORT, PREVIEW_HOST, resolve);
+}
+
+function createServer() {
+  return http.createServer((req, res) => {
+    setHeaders(res, headers);
+
+    switch (req.method) {
+      case 'OPTIONS': return handleOptions(res, req);
+      case 'POST': return handlePost(res, req);
+      default: return handle404(res);
     }
-  })();
-  const {query = {}} = u;
-  const cache = !query['nocache'];
+  })
+}
+
+function handlePost(res, req) {
+  const match = req.url.match(idRegex);
+
+  if (match) {
+    const index = parseInt(match[1], 10);
+
+    if (cbs[index]) executeCallback(index, {req, res});
+    else handle404(res);
+  } else handle404(res);
+
+  return true;
+}
+
+function executeCallback(index, param) {
+  try {
+    cbs[index](param);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    delete cbs[index];
+  }
+}
+
+async function getProxyRequest({
+  spec: {url, ext, hash, type},
+  useCache,
+  contentType,
+  index,
+  key,
+  page,
+  proxy,
+  res
+}) {
+  const screenshotURL = `${appURL}/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/${index}`
+
+  await page.goto(screenshotURL);
+
+  const buffers = [];
+
+  const {
+    req: proxyReq,
+    res: proxyRes,
+  } = await proxy.promise;
+
+  res.setHeader('Content-Type', contentType);
+
+  // Pipe the request and add data to buffers.
+  proxyReq.pipe(res);
+  proxyReq.on('data', d => buffers.push(d));
+
+  // Wait for end of request.
+  await promisifyRequest(proxyReq);
+  proxyRes.end();
+
+  // Put object in s3 bucket if caching request.
+  if (useCache) await cacheObjectBuffers({buffers, contentType, key});
+}
+
+async function cacheObjectBuffers({buffers, contentType, key}) {
+  const buffer = Buffer.concat(buffers);
+  buffers.length = 0;
+
+  return await putObject(
+    bucketNames.preview,
+    key,
+    buffer,
+    contentType,
+  );
+}
+
+async function getPreview(res, url) {
+  const spec = getSpec(url);
+  // Caching should be opt-out.
+  const useCache = !url.searchParams.get('nocache');
+
   if (spec) {
-    const {url, hash, ext, type} = spec;
-    console.log('preview request', {hash, ext, type, cache});
-    const key = `${hash}/${ext}/${type}`;
-    const o = cache ? await (async () => {
-      try {
-        return await getObject(
-          bucketNames.preview,
-          key,
-        );
-      } catch(err) {
-        // console.warn(err);
-        return null;
-      }
-    })() : null;
+    const {hash, ext, type} = spec;
     const contentType = mime.getType(ext);
+    const key = `${hash}/${ext}/${type}`;
+    const o = useCache
+      ? await getObjectOrNull(bucketNames.preview, key)
+      : null;
+
+    console.log('preview request:', {hash, ext, type, useCache});
+
     if (o) {
-      // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
       res.setHeader('Content-Type', contentType);
       res.end(o.Body);
     } else {
       await ticketManager.lock();
 
-      const p = _makePromise()
-      const index = ++cbIndex;
-      cbs[index] = p.accept.bind(p);
+      const proxy = makePromise();
 
+      // Increment index and add to callback register.
+      const index = ++cbIndex;
+      cbs[index] = proxy.resolve;
+
+      // Open a new page and attempt a proxy request.
       let page;
       try {
-        // console.log('preview 3');
         page = await browser.newPage();
-        // console.log('preview 4');
-        page.on('console', e => {
-          console.log(e);
-        });
-        page.on('error', err => {
-          console.log(err);
-        });
-        page.on('pageerror', err => {
-          console.log(err);
-        });
 
-        let timeout;
-        const t = new Promise((accept, reject) => {
-          timeout = setTimeout(() => {
-            reject(new Error('timed out'));
-          }, 10 * 1000);
-        });
+        page.on('console', console.log);
+        page.on('error', console.error);
+        page.on('pageerror', console.error);
 
-        await Promise.race([
-          (async () => {
-            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
-            const {
-              req: proxyReq,
-              res: proxyRes,
-            } = await p;
+        await timeoutCallback(getProxyRequest.bind(
+          null,
+          {spec, useCache, contentType, index, key, page, proxy, res}
+        ));
 
-            res.setHeader('Content-Type', contentType);
-            proxyReq.pipe(res);
-
-            const bs = [];
-            proxyReq.on('data', d => {
-              bs.push(d);
-            });
-            proxyReq.on('error', reject);
-            await new Promise((accept, reject) => {
-              proxyReq.on('end', accept);
-            });
-            proxyRes.end();
-            // page.close();
-
-            if (cache) {
-              const b = Buffer.concat(bs);
-              bs.length = 0;
-              await putObject(
-                bucketNames.preview,
-                key,
-                b,
-                contentType,
-              );
-            }
-          })(),
-          t,
-        ]);
-        clearTimeout(timeout);
       } catch (err) {
-        console.warn(err.stack);
+        console.error(err);
       } finally {
         ticketManager.unlock();
-
-        if (page) {
-          page.close();
-        }
+        page?.close();
+        res.end();
       }
     }
+  } else handle404(res);
+}
+
+function getSpec(url) {
+  const match = url.pathname.match(queryA);
+
+  if (match) {
+    return {
+      ext: match[2].toLowerCase(),
+      hash: match[1],
+      type: match[4].toLowerCase(),
+      url: match[1] + '.' + match[2],
+    };
   } else {
-    res.statusCode = 404;
-    res.end();
+    const match = url.pathname.match(queryB);
+
+    if (match) {
+      const hash = match[1];
+
+      return {
+        hash,
+        ext: match[2].toLowerCase(),
+        type: match[4].toLowerCase(),
+        url: `${storageHost}/${hash}`,
+      };
+    } else {
+      return null;
+    }
   }
-};
+}
 
 module.exports = {
   _handlePreviewRequest,

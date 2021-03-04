@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "start": "sudo $(which node) $(which forever) start -a -l forever.log -o stdout.log -e stderr.log index.js",
-    "stop": "sudo $(which node) $(which forever) stop index.js"
+    "stop": "sudo $(which node) $(which forever) stop index.js",
+    "dev": "sudo NODE_ENV=development ./node_modules/.bin/nodemon --trace-warnings ./index.js",
+    "script:generateCerts": "./scripts/generateCerts.sh"
   },
   "repository": {
     "type": "git",
@@ -18,7 +23,8 @@
   },
   "homepage": "https://github.com/modulesio/webaverse-server#readme",
   "devDependencies": {
-    "forever": "^3.0.0"
+    "forever": "^3.0.0",
+    "nodemon": "^2.0.7"
   },
   "dependencies": {
     "aws-sdk": "^2.814.0",

@@ -1,40 +1,8 @@
-const path = require('path');
-const stream = require('stream');
 const fs = require('fs');
-const url = require('url');
-// const querystring = require('querystring');
 const http = require('http');
 const https = require('https');
-// const dns = require('dns');
-// const crypto = require('crypto');
-// const zlib = require('zlib');
-// const child_process = require('child_process');
-// const mkdirp = require('mkdirp');
-// const express = require('express');
-// const httpProxy = require('http-proxy');
-// const ws = require('ws');
-// const LRU = require('lru');
-// const request = require('request');
-// const mime = require('mime');
-// const AWS = require('aws-sdk');
-// const Stripe = require('stripe');
-// const puppeteer = require('puppeteer');
-// const namegen = require('./namegen.js');
-// const Base64Encoder = require('./encoder.js').Encoder;
-// const {JSONServer, CustomEvent} = require('./dist/sync-server.js');
-// const fetch = require('node-fetch');
-// const {SHA3} = require('sha3');
-// const {default: formurlencoded} = require('form-urlencoded');
-// const Web3 = require('web3');
-// const bip39 = require('bip39');
-// const {hdkey} = require('ethereumjs-wallet');
-// const blockchain = require('./blockchain.js');
-// const {getExt, makePromise} = require('./utils.js');
-// const accountManager = require('./account-manager.js');
-// const eventsManager = require('./events-manager.js');
-// const ethereumHost = 'ethereum.exokit.org';
 
-// const api = require('./api.js');
+const {devMode} = require('./const.js');
 const {_handlePreviewRequest} = require('./routes/preview.js')
 const {_handleLandPreviewRequest} = require('./routes/land-preview.js')
 const {_handleBakeRequest} = require('./routes/bake.js')
@@ -44,18 +12,47 @@ const PRIVKEY = fs.readFileSync('./certs/privkey.pem');
 
 const PORT = parseInt(process.env.PORT, 10) || 80;
 
+const bakeRegex = /\/bake\//
+const landPreviewRegex = /\/land-preview\//
+const previewRegex = /\/preview\//
+
+
 Error.stackTraceLimit = 300;
+
+function handleDevRequest(req) {
+  // Shim host and routes for local development.
+  if (devMode) {
+    // Bake
+    if (bakeRegex.test(req.url)) {
+      req.url = req.url.substr('/bake'.length);
+      req.headers.host = 'bake.exokit.org'
+
+    // Land Preview
+    } else if (landPreviewRegex.test(req.url)) {
+      req.url = req.url.substr('/land-preview'.length);
+      req.headers.host = 'land-preview.exokit.org'
+
+    // Preview
+    } else if (previewRegex.test(req.url)) {
+      req.url = req.url.substr('/preview'.length);
+      req.headers.host = 'preview.exokit.org'
+    }
+  }
+}
 
 const _req = protocol => (req, res) => {
   try {
-    const o = url.parse(protocol + '//' + (req.headers['host'] || '') + req.url);
-    if (o.host === 'preview.exokit.org') {
-      _handlePreviewRequest(req, res);
+    handleDevRequest(req);
+
+    const url = new URL(req.url, `${protocol}//${req.headers.host || ''}`);
+
+    if (url.host === 'preview.exokit.org') {
+      _handlePreviewRequest(req, res, url);
       return;
-    } else if (o.host === 'land-preview.exokit.org') {
+    } else if (url.host === 'land-preview.exokit.org') {
       _handleLandPreviewRequest(req, res);
       return;
-    } else if (o.host === 'bake.exokit.org') {
+    } else if (url.host === 'bake.exokit.org') {
       _handleBakeRequest(req, res);
       return;
     }
@@ -63,7 +60,7 @@ const _req = protocol => (req, res) => {
     res.statusCode = 404;
     res.end('host not found');
   } catch(err) {
-    console.warn(err.stack);
+    console.error(err);
 
     res.statusCode = 500;
     res.end(err.stack);

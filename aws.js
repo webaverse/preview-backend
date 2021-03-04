@@ -24,6 +24,12 @@ const getObject = (bucket, key) => {
     })
 }
 
+const getObjectOrNull = async (bucket, key) => {
+  try {
+    return await getObject(bucket, key);
+  } catch(err) { return null; }
+}
+
 const putObject = (bucket, key, data, type) => {
     return new Promise(async (resolve, reject) => {
         const params = { Body: data, Bucket: bucket, Key: key, ACL: 'public-read' };
@@ -60,6 +66,7 @@ function uploadFromStream(bucket, key, type) {
 
 module.exports = {
   getObject,
+  getObjectOrNull,
   putObject,
   uploadFromStream,
 }
