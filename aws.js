@@ -32,7 +32,7 @@ const getObjectOrNull = async (bucket, key) => {
 
 const putObject = (bucket, key, data, type) => {
     return new Promise(async (resolve, reject) => {
-        const params = { Body: data, Bucket: bucket, Key: key, ACL: 'public-read' };
+        const params = {Body: data, Bucket: bucket, Key: key};
         if (type) {
           params['ContentType'] = type;
         }
@@ -49,7 +49,7 @@ const putObject = (bucket, key, data, type) => {
 
 function uploadFromStream(bucket, key, type) {
   const pass = new stream.PassThrough();
-  const params = {Bucket: bucket, Key: key, Body: pass, ACL: 'public-read'};
+  const params = {Bucket: bucket, Key: key, Body: pass};
   if (type) {
     params['ContentType'] = type;
   }
