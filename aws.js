@@ -13,12 +13,17 @@ const s3 = new AWS.S3(awsConfig);
 const getObject = (bucket, key) => {
     return new Promise(async (resolve, reject) => {
         const params = { Bucket: bucket, Key: key };
+        console.time('s3 get');
         s3.getObject(params, (error, data) => {
             if (error) {
-                reject(error)
+              console.timeEnd('s3 get');
+              console.debug('ERROR:', key, error);
+              reject(error);
             }
             else {
-                resolve(data)
+              console.timeEnd('s3 get');
+              console.debug('DATA:', key, data);
+              resolve(data);
             }
         });
     })
