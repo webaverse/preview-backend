@@ -18,7 +18,7 @@ const PREVIEW_HOST = '127.0.0.1';
 const PREVIEW_PORT = 8999;
 
 const bucketNames = {
-  preview: 'preview.exokit.org',
+  preview: 'preview-exokit-org',
 };
 const storageHost = 'https://ipfs.exokit.org';
 
