@@ -1,7 +1,7 @@
 const http = require('http');
 const mime = require('mime');
 
-const {getObjectOrNull, putObject} = require('../aws.js');
+const {getObjectOrNull, getObjectStream, putObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
 const {appURL} = require('../const.js');
 const {
@@ -152,6 +152,8 @@ async function cacheObjectBuffers({buffers, contentType, key}) {
 }
 
 async function getPreview(res, url) {
+  res.on('pipe', () => console.time('PIPE'))
+
   const spec = getSpec(url);
   // Caching should be opt-out.
   const useCache = !url.searchParams.get('nocache');
@@ -160,13 +162,20 @@ async function getPreview(res, url) {
     const {hash, ext, type} = spec;
     const contentType = mime.getType(ext);
     const key = `${hash}/${ext}/${type}`;
-    const o = useCache
+    /*const o = useCache
       ? await getObjectOrNull(bucketNames.preview, key)
-      : null;
+      : null;*/
+
+    const o = null;
 
     console.log('preview request:', {hash, ext, type, useCache});
 
-    if (o) {
+    const readStream = getObjectStream(bucketNames.preview, key);
+
+    if (readStream) {
+      res.setHeader('Content-Type', contentType);
+      readStream.pipe(res);
+    } else if (o) {
       res.setHeader('Content-Type', contentType);
       res.end(o.Body);
     } else {

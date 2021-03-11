@@ -30,6 +30,21 @@ const getObjectOrNull = async (bucket, key) => {
   } catch(err) { return null; }
 }
 
+const getObjectStream = (bucket, key) => {
+  try {
+    const params = { Bucket: bucket, Key: key };
+    const readStream = s3.getObject(params).createReadStream();
+    readStream.on('end', () => console.timeEnd('PIPE'))
+
+    return readStream;
+  }
+
+  catch ( e ) {
+    console.error(e);
+    return null;
+  }
+}
+
 const putObject = (bucket, key, data, type) => {
     return new Promise(async (resolve, reject) => {
         const params = {Body: data, Bucket: bucket, Key: key};
@@ -67,6 +82,7 @@ function uploadFromStream(bucket, key, type) {
 module.exports = {
   getObject,
   getObjectOrNull,
+  getObjectStream,
   putObject,
   uploadFromStream,
 }
