@@ -8,9 +8,7 @@
     "start-no-sudo": "$(which node) $(which forever) start -a -l forever.log -o stdout.log -e stderr.log index.js",
     "stop": "sudo $(which node) $(which forever) stop index.js"
   },
-  "engines": {
-    "node": ">=0.12"
-  },
+  "engines": { "node" : "14.16.0" },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webaverse/preview-backend.git"
