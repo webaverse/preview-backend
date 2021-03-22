@@ -7,11 +7,6 @@ phases:
     commands:
       - echo Installing source NPM dependencies...
       - npm install
-  build:
-    commands:
-      - echo Build started on `date`
-      - echo Starting the application
-      - npm run start
 artifacts:
   files:
     - '**/*'
