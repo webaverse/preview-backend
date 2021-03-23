@@ -35,9 +35,9 @@ const https = require('https');
 // const ethereumHost = 'ethereum.exokit.org';
 
 // const api = require('./api.js');
-const {_handlePreviewRequest} = require('./routes/preview.js')
-const {_handleLandPreviewRequest} = require('./routes/land-preview.js')
-const {_handleBakeRequest} = require('./routes/bake.js')
+const { _handlePreviewRequest } = require('./routes/preview.js')
+const { _handleLandPreviewRequest } = require('./routes/land-preview.js')
+const { _handleBakeRequest } = require('./routes/bake.js')
 
 const CERT = fs.readFileSync('./certs/fullchain.pem');
 const PRIVKEY = fs.readFileSync('./certs/privkey.pem');
@@ -62,7 +62,7 @@ const _req = protocol => (req, res) => {
 
     res.statusCode = 404;
     res.end('host not found');
-  } catch(err) {
+  } catch (err) {
     console.warn(err.stack);
 
     res.statusCode = 500;
@@ -71,19 +71,25 @@ const _req = protocol => (req, res) => {
 };
 
 const server = http.createServer(_req('http:'));
-const server2 = https.createServer({
-  cert: CERT,
-  key: PRIVKEY,
-}, _req('https:'));
 
+if (CERT !== undefined) {
+  const server2 = https.createServer({
+    cert: CERT,
+    key: PRIVKEY,
+  }, _req('https:'));
+}
 const _warn = err => {
   console.warn('uncaught: ' + err.stack);
 };
 process.on('uncaughtException', _warn);
 process.on('unhandledRejection', _warn);
 
-server.listen(PORT);
-server2.listen(443);
-
+server.listen(process.env.HTTP_PORT || PORT);
 console.log(`http://127.0.0.1:${PORT}`);
-console.log(`https://127.0.0.1:443`);
+
+if (CERT !== undefined) {
+  const HTTPS_PORT = 443
+  server2.listen(process.env.HTTPS_PORT || HTTPS_PORT);
+  console.log(`https://127.0.0.1:${HTTPS_PORT}`);
+}
+
