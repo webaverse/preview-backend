@@ -4,9 +4,6 @@ phases:
     runtime-versions:
       nodejs: 14
   pre_build:
-    commands:
-      - echo Installing source NPM dependencies...
-      - npm install
 artifacts:
   files:
     - '**/*'
