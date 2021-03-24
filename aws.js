@@ -1,6 +1,17 @@
 const stream = require('stream');
 const AWS = require('aws-sdk');
-const {accessKeyId, secretAccessKey} = require('./config.json');
+const fs = require('fs');
+
+let accessKeyId, secretAccessKey;
+if(fs.existsSync('./config.json')){
+accessKeyId = require('./config.json').accessKeyId;
+secretAccessKey = require('./config.json').secretAccessKey;
+} else {
+  accessKeyId = process.env.accessKeyId;
+  secretAccessKey = process.env.secretAccessKey;
+}
+
+
 const awsConfig = new AWS.Config({
     credentials: new AWS.Credentials({
         accessKeyId,
