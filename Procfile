@@ -1,1 +1,1 @@
-web: npm run start-proxied
+web: npm install && npm run start-proxied
