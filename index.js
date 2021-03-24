@@ -38,10 +38,11 @@ const https = require('https');
 const { _handlePreviewRequest } = require('./routes/preview.js')
 const { _handleLandPreviewRequest } = require('./routes/land-preview.js')
 const { _handleBakeRequest } = require('./routes/bake.js')
-
-const CERT = fs.readFileSync('./certs/fullchain.pem');
-const PRIVKEY = fs.readFileSync('./certs/privkey.pem');
-
+let CERT, PRIVKEY
+try {
+  CERT = fs.readFileSync('./certs/fullchain.pem');
+PRIVKEY = fs.readFileSync('./certs/privkey.pem');
+} catch {console.warn("No certs found")}
 const PORT = parseInt(process.env.PORT, 10) || 80;
 
 Error.stackTraceLimit = 300;
@@ -71,9 +72,9 @@ const _req = protocol => (req, res) => {
 };
 
 const server = http.createServer(_req('http:'));
-
+let server2;
 if (CERT !== undefined) {
-  const server2 = https.createServer({
+  server2 = https.createServer({
     cert: CERT,
     key: PRIVKEY,
   }, _req('https:'));
