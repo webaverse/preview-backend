@@ -173,7 +173,7 @@ const _handlePreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const {
               req: proxyReq,
               res: proxyRes,
