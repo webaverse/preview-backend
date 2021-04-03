@@ -20,19 +20,19 @@ Error.stackTraceLimit = 300;
 const _req = protocol => (req, res) => {
   try {
     const o = url.parse(protocol + '//' + (req.headers['host'] || '') + req.url);
-    if (o.host === 'preview.exokit.org') {
+    if (/^previews?\.exokit\.org$/.test(o.host)) {
       _handlePreviewRequest(req, res);
       return;
-    } else if (o.host === 'land-preview.exokit.org') {
+    } else if (/^land-previews?\.exokit\.org$/.test(o.host)) {
       _handleLandPreviewRequest(req, res);
       return;
-    } else if (o.host === 'bake.exokit.org') {
+    } else if (/^bakes?\.exokit\.org$/.test(o.host)) {
       _handleBakeRequest(req, res);
       return;
-    } else if (o.host.includes("preview-backend")){
+    } /* else if (o.host.includes("preview-backend")){
       _handlePreviewRequest(req, res);
       return;
-    }
+    } */
 
     res.statusCode = 404;
     res.end('host not found');
