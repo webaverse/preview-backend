@@ -20,13 +20,13 @@ Error.stackTraceLimit = 300;
 const _req = protocol => (req, res) => {
   try {
     const o = url.parse(protocol + '//' + (req.headers['host'] || '') + req.url);
-    if (/^previews?\.exokit\.org$/.test(o.host)) {
+    if (/^preview[0-9]*\.exokit\.org$/.test(o.host)) {
       _handlePreviewRequest(req, res);
       return;
-    } else if (/^land-previews?\.exokit\.org$/.test(o.host)) {
+    } else if (/^land-preview[0-9]*\.exokit\.org$/.test(o.host)) {
       _handleLandPreviewRequest(req, res);
       return;
-    } else if (/^bakes?\.exokit\.org$/.test(o.host)) {
+    } else if (/^bake[0-9]*\.exokit\.org$/.test(o.host)) {
       _handleBakeRequest(req, res);
       return;
     } /* else if (o.host.includes("preview-backend")){
