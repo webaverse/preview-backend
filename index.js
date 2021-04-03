@@ -20,6 +20,7 @@ Error.stackTraceLimit = 300;
 const _req = protocol => (req, res) => {
   try {
     const o = url.parse(protocol + '//' + (req.headers['host'] || '') + req.url);
+    console.log('got req', o.host);
     if (/^preview[0-9]*\.exokit\.org$/.test(o.host)) {
       _handlePreviewRequest(req, res);
       return;
