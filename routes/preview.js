@@ -133,7 +133,7 @@ const _handlePreviewRequest = async (req, res) => {
   if (spec) {
     const {url, hash, ext, type, height, width} = spec;
     console.log('preview request', {hash, ext, type, cache, height, width});
-    const key = `${hash}/${ext}/${type}`;
+    const key = `${hash}/${ext}/${type}${width}x${height}`;
     const o = cache ? await (async () => {
       try {
         return await getObject(
@@ -194,7 +194,9 @@ const _handlePreviewRequest = async (req, res) => {
             proxyReq.on('data', d => {
               bs.push(d);
             });
-            proxyReq.on('error', reject);
+            proxyReq.on('error', err => {
+              console.warn(err);
+            });
             await new Promise((accept, reject) => {
               proxyReq.on('end', accept);
             });
