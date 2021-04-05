@@ -1,10 +1,16 @@
 const puppeteer = require('puppeteer');
 
+const fs = require('fs');
+const exists = fs.existsSync('/usr/bin/google-chrome-stable');
+
+console.log("********* CHROME EXISTS?", exists);
+
 const browserPromise = puppeteer.launch({
   executablePath: '/usr/bin/google-chrome-stable',
   args: [
     '--no-sandbox',
     '--no-zygote',
+    '--disable-setuid-sandbox'
     // '--disable-dev-shm-usage',
   ],
   // defaultViewport: chromium.defaultViewport,
