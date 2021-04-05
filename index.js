@@ -27,13 +27,13 @@ const _req = protocol => (req, res) => {
     } else if (o.host === 'bake.exokit.org') {
       _handleBakeRequest(req, res);
       return;
-    } else if (o.host.includes("preview-backend") || o.host.includes("preview-dev")){
+    } else if (o.host.includes("preview-backend") || o.host.includes("webaverse-preview")){
       _handlePreviewRequest(req, res);
       return;
     }
 
     res.statusCode = 404;
-    res.end('host not found');
+    res.end('host not found' + o);
   } catch (err) {
     console.warn(err.stack);
 
