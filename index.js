@@ -1,5 +1,3 @@
-const path = require('path');
-const stream = require('stream');
 const fs = require('fs');
 const url = require('url');
 const http = require('http');
@@ -29,13 +27,13 @@ const _req = protocol => (req, res) => {
     } else if (o.host === 'bake.exokit.org') {
       _handleBakeRequest(req, res);
       return;
-    } else if (o.host.includes("preview-backend")){
+    } else if (o.host.includes("preview-backend") || o.host.includes("webaverse-preview")){
       _handlePreviewRequest(req, res);
       return;
     }
 
     res.statusCode = 404;
-    res.end('host not found');
+    res.end('host not found' + o);
   } catch (err) {
     console.warn(err.stack);
 

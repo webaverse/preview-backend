@@ -186,7 +186,9 @@ const _handlePreviewRequest = async (req, res) => {
             proxyReq.on('data', d => {
               bs.push(d);
             });
-            proxyReq.on('error', reject);
+            proxyReq.on('error', err => {
+              console.warn(err);
+            });
             await new Promise((accept, reject) => {
               proxyReq.on('end', accept);
             });
