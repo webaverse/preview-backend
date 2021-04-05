@@ -2,9 +2,21 @@ const Web3 = require('web3');
 const bip32 = require('./bip32.js');
 const bip39 = require('./bip39.js');
 
-const {infuraApiKey, network, mnemonic} = require('./config.json');
+const fs = require('fs');
 const webaverseAbi = require('./webaverse-abi.json');
 const webaverseAddress = require('./webaverse-address.json');
+
+
+let infuraApiKey, network, mnemonic;
+if(fs.existsSync('./config.json')){
+  infuraApiKey  = require('./config.json').infuraApiKey;
+  network  = require('./config.json').network;
+  mnemonic  = require('./config.json').mnemonic;
+} else {
+  infuraApiKey = process.env.infuraApiKey;
+  network = process.env.network;
+  mnemonic = process.env.mnemonic;
+}
 
 const _makeContracts = web3 => {
   return {
