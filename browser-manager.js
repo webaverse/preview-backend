@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 
 const browserPromise = puppeteer.launch({
+  executablePath: '/usr/bin/google-chrome-stable',
   args: [
     '--no-sandbox',
     '--no-zygote',
