@@ -96,8 +96,8 @@ const _handlePreviewRequest = async (req, res) => {
       const hash = match[1];
       const ext = match[2].toLowerCase();
       const type = match[4].toLowerCase();
-      const width = match[3].match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0];
-      const height = match[3].match(/(?<=x)[\w+.-]+/)[0];
+      const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
+      const height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
       return {
         url,
         hash,
