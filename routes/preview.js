@@ -96,11 +96,15 @@ const _handlePreviewRequest = async (req, res) => {
       const hash = match[1];
       const ext = match[2].toLowerCase();
       const type = match[4].toLowerCase();
+      const width = match[3].match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0];
+      const height = match[3].match(/(?<=x)[\w+.-]+/)[0];
       return {
         url,
         hash,
         ext,
-        type,
+        type,          
+        width,
+        height
       };
     } else {
       const match = u.pathname.match(/^\/([^\.]+)\.([^\/]+)\/([^\.]+)\.(.+)$/);
@@ -109,11 +113,15 @@ const _handlePreviewRequest = async (req, res) => {
         const ext = match[2].toLowerCase();
         const type = match[4].toLowerCase();
         const url = `${storageHost}/${hash}`;
+        const width = match[3].match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0];
+        const height = match[3].match(/(?<=x)[\w+.-]+/)[0];
         return {
           url,
           hash,
           ext,
           type,
+          width,
+          height
         };
       } else {
         return null;
@@ -123,8 +131,8 @@ const _handlePreviewRequest = async (req, res) => {
   const {query = {}} = u;
   const cache = !query['nocache'];
   if (spec) {
-    const {url, hash, ext, type} = spec;
-    console.log('preview request', {hash, ext, type, cache});
+    const {url, hash, ext, type, height, width} = spec;
+    console.log('preview request', {hash, ext, type, cache, height, width});
     const key = `${hash}/${ext}/${type}`;
     const o = cache ? await (async () => {
       try {
@@ -173,7 +181,7 @@ const _handlePreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
+            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
             const {
               req: proxyReq,
               res: proxyRes,
