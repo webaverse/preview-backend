@@ -96,8 +96,8 @@ const _handlePreviewRequest = async (req, res) => {
       const hash = match[1];
       const ext = match[2].toLowerCase();
       const type = match[4].toLowerCase();
-      const width = match[3].match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0];
-      const height = match[3].match(/(?<=x)[\w+.-]+/)[0];
+      const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/) ? match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0] : 256;
+      const height = match[3]?.match(/(?<=x)[\w+.-]+/)[0] ? match[3]?.match(/(?<=x)[\w+.-]+/)[0] : 256;
       return {
         url,
         hash,
@@ -113,8 +113,9 @@ const _handlePreviewRequest = async (req, res) => {
         const ext = match[2].toLowerCase();
         const type = match[4].toLowerCase();
         const url = `${storageHost}/${hash}`;
-        const width = match[3].match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0];
-        const height = match[3].match(/(?<=x)[\w+.-]+/)[0];
+        console.log('match3', match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/))
+        const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/) ? match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)[0] : 256;
+        const height = match[3]?.match(/(?<=x)[\w+.-]+/) ? match[3]?.match(/(?<=x)[\w+.-]+/)[0] : 256;
         return {
           url,
           hash,
@@ -133,7 +134,7 @@ const _handlePreviewRequest = async (req, res) => {
   if (spec) {
     const {url, hash, ext, type, height, width} = spec;
     console.log('preview request', {hash, ext, type, cache, height, width});
-    const key = `${hash}/${ext}/${type}`;
+    const key = `${hash}/${ext}/${type}/${width}x${height}`;
     const o = cache ? await (async () => {
       try {
         return await getObject(
