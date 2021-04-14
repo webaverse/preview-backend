@@ -16,7 +16,7 @@ yum update -y
 echo
 echo "~~~~~~ setup extras needed for other tools"
 echo
-yum install -y gcc openssl-devel bzip2-devel libffi-devel atk java-atk-wrapper at-spi2-atk gtk3 libXt cups-libs dbus-glib libXrandr libXcursor libXinerama cairo cairo-gobject pango
+yum install -y gcc openssl-devel bzip2-devel libffi-devel atk java-atk-wrapper at-spi2-atk gtk3 libXt cups-libs.i686 cups-libs.x86_64 dbus-glib libXrandr libXcursor libXinerama cairo cairo-gobject pango
 sudo amazon-linux-extras install epel -y
 
 echo
