@@ -107,7 +107,9 @@ const _handleCardPreviewRequest = async (req, res) => {
               p.accept(e.data);
             }); */
             console.log('load page 2');
-            await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}`);
+            await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}`, {
+              waitUntil: 'networkidle0',
+            });
             console.log('load page 3');
             
             /* function listenFor(type) {
