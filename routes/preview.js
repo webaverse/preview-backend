@@ -30,7 +30,7 @@ const _warn = err => {
 process.on('uncaughtException', _warn);
 process.on('unhandledRejection', _warn);
 
-let browser;
+let browser, ticketManager;
 const serverPromise = _makePromise();
 let cbIndex = 0;
 const cbs = {};
