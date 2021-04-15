@@ -91,11 +91,34 @@ const _handleCardPreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
+            // console.log('load page 1');
             await page.setViewport({
               width: cardWidth,
               height: cardHeight,
             });
+            const p = _makePromise();
+            await page.exposeFunction('onMessageReceivedEvent', e => {
+              p.accept(e.data);
+            });
+            // console.log('load page 2');
             await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}`);
+            // console.log('load page 3');
+            
+            function listenFor(type) {
+              return page.evaluateOnNewDocument(type => {
+                window.addEventListener(type, e => {
+                  window.onMessageReceivedEvent({type, data: e.data});
+                });
+              }, type);
+            }
+            await listenFor('message'); // Listen for "message" custom event on page load.
+            
+            // console.log('load page 4');
+            
+            await p;
+            
+            // console.log('load page 5');
+            
             const b = await page.screenshot({
               type: (() => {
                 switch (ext) {
@@ -105,6 +128,7 @@ const _handleCardPreviewRequest = async (req, res) => {
                 }
               })(),
             });
+            // console.log('load page 6');
             
             res.setHeader('Content-Type', contentType);
             res.end(b);
