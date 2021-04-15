@@ -5,9 +5,6 @@ const mime = require('mime');
 const {getObject, putObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
 
-const PREVIEW_HOST = '127.0.0.1';
-const PREVIEW_PORT = 8996;
-
 const bucketNames = {
   preview: 'preview-exokit-org',
 };
@@ -39,39 +36,6 @@ const cbs = {};
 browser = await browserManager.getBrowser();
 ticketManager = browserManager.makeTicketManager(4);
 
-const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Methods', '*');
-  if (req.method === 'OPTIONS') {
-    res.end();
-  } else if (req.method === 'POST') {
-    const match = req.url.match(/^\/([0-9]+)/);
-    // console.log('callback server 1', req.url, !!match);
-    if (match) {
-      const index = parseInt(match[1], 10);
-      const cb = cbs[index];
-      // console.log('callback server 2', req.url, index, !!cb);
-      if (cb) {
-        delete cbs[index];
-        cb({req, res});
-      } else {
-        res.statusCode = 404;
-        res.end();
-      }
-    } else {
-      res.statusCode = 404;
-      res.end();
-    }
-  } else {
-    res.statusCode = 404;
-    res.end();
-  }
-});
-server.on('error', serverPromise.reject.bind(serverPromise));
-server.listen(PREVIEW_PORT, PREVIEW_HOST, serverPromise.accept.bind(serverPromise));
-})();
-
 const _handleCardPreviewRequest = async (req, res) => {
   await serverPromise;
 
@@ -82,10 +46,11 @@ const _handleCardPreviewRequest = async (req, res) => {
   const u = url.parse(req.url, true);
   const match = u.pathname.match(/^\/([0-9]+)$/);
   const tokenId = parseInt(match?.[1] || '', 10);
-  if (!isNaN(tokenId)) {
-    const {query = {}} = u;
+  const {query = {}} = u;
+  const {ext} = query;
+  if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext)) {
     const cache = !query['nocache'];
-    const key = `cards/${tokenId}`;
+    const key = `cards/${tokenId}/${ext}`;
     const o = cache ? await (async () => {
       try {
         return await getObject(
@@ -134,30 +99,20 @@ const _handleCardPreviewRequest = async (req, res) => {
         await Promise.race([
           (async () => {
             await page.goto(`https://cards.webaverse.com/?t=${tokenId}`);
-            const {
-              req: proxyReq,
-              res: proxyRes,
-            } = await p;
-
+            const b = await page.screenshot({
+              type: (() => {
+                switch (ext) {
+                  case 'png': return 'png';
+                  case 'jpg': return 'jpeg';
+                  default: return null;
+                }
+              })(),
+            });
+            
             res.setHeader('Content-Type', contentType);
-            proxyReq.pipe(res);
-
-            const bs = [];
-            proxyReq.on('data', d => {
-              bs.push(d);
-            });
-            proxyReq.on('error', err => {
-              console.warn(err);
-            });
-            await new Promise((accept, reject) => {
-              proxyReq.on('end', accept);
-            });
-            proxyRes.end();
-            // page.close();
+            res.end(b);
 
             if (cache) {
-              const b = Buffer.concat(bs);
-              bs.length = 0;
               await putObject(
                 bucketNames.preview,
                 key,
@@ -168,7 +123,6 @@ const _handleCardPreviewRequest = async (req, res) => {
           })(),
           t,
         ]);
-        clearTimeout(timeout);
       } catch (err) {
         console.warn(err.stack);
       } finally {
