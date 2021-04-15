@@ -27,13 +27,15 @@ const _warn = err => {
 process.on('uncaughtException', _warn);
 process.on('unhandledRejection', _warn);
 
-let browser;
-(async () => {
+let browser, ticketManager;
+const serverPromise = (async () => {
 browser = await browserManager.getBrowser();
 ticketManager = browserManager.makeTicketManager(4);
 })();
 
 const _handleCardPreviewRequest = async (req, res) => {
+  await serverPromise;
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
