@@ -95,7 +95,7 @@ const _handleCardPreviewRequest = async (req, res) => {
               width: cardWidth,
               height: cardHeight,
             });
-            await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}&h=${cardHeight}`);
+            await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}`);
             const b = await page.screenshot({
               type: (() => {
                 switch (ext) {
