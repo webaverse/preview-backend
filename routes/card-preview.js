@@ -42,8 +42,10 @@ const _handleCardPreviewRequest = async (req, res) => {
   const match = u.pathname.match(/^\/([0-9]+)$/);
   const tokenId = parseInt(match?.[1] || '', 10);
   const {query = {}} = u;
-  const {ext = 'png'} = query;
-  if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext)) {
+  const {w = 500 + '', ext = 'png'} = query;
+  const cardWidth = parseInt(w, 10);
+  if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
+    const cardHeight = cardWidth / 2.5 * 3.5;
     const cache = !query['nocache'];
     const key = `cards/${tokenId}/${ext}`;
     const o = cache ? await (async () => {
@@ -89,7 +91,11 @@ const _handleCardPreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://cards.webaverse.com/?t=${tokenId}`);
+            await page.setViewport({
+              width: cardWidth,
+              height: cardHeight,
+            });
+            await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}&h=${cardHeight}`);
             const b = await page.screenshot({
               type: (() => {
                 switch (ext) {
