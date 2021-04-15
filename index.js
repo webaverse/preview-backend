@@ -64,4 +64,3 @@ if (CERT !== undefined) {
   server2.listen(process.env.HTTPS_PORT || HTTPS_PORT);
   console.log(`https://127.0.0.1:${HTTPS_PORT}`);
 }
-
