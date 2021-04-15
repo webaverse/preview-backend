@@ -81,9 +81,10 @@ const _handleCardPreviewRequest = async (req, res) => {
 
   const u = url.parse(req.url, true);
   const match = u.pathname.match(/^\/([0-9]+)$/);
-  const {query = {}} = u;
-  const cache = !query['nocache'];
-  if (match) {
+  const tokenId = parseInt(match?.[1] || '', 10);
+  if (!isNaN(tokenId)) {
+    const {query = {}} = u;
+    const cache = !query['nocache'];
     const key = `cards/${tokenId}`;
     const o = cache ? await (async () => {
       try {
