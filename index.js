@@ -37,7 +37,7 @@ const _req = protocol => (req, res) => {
     }
 
     res.statusCode = 404;
-    res.end('host not found' + o.host);
+    res.end('host not found: ' + JSON.stringify(o));
   } catch (err) {
     console.warn(err.stack);
 
