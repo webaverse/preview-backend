@@ -72,7 +72,7 @@ server.on('error', serverPromise.reject.bind(serverPromise));
 server.listen(PREVIEW_PORT, PREVIEW_HOST, serverPromise.accept.bind(serverPromise));
 })();
 
-const handleCardPreviewRequest = async (req, res) => {
+const _handleCardPreviewRequest = async (req, res) => {
   await serverPromise;
 
   res.setHeader('Access-Control-Allow-Origin', '*');
