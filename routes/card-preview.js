@@ -72,13 +72,13 @@ const _handleCardPreviewRequest = async (req, res) => {
       let page;
       try {
         page = await browser.newPage();
-        const p = _makePromise();
+        // const p = _makePromise();
         page.on('console', e => {
           console.log(e);
-          const text = e.text();
+          /* const text = e.text();
           if (/cards done render/i.test(text)) {
             p.accept();
-          }
+          } */
         });
         page.on('error', err => {
           console.log(err);
@@ -125,7 +125,7 @@ const _handleCardPreviewRequest = async (req, res) => {
             
             console.log('load page 4');
             
-            await p;
+            // await p;
             
             console.log('load page 5');
             
