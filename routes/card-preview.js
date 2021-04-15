@@ -100,7 +100,7 @@ const _handleCardPreviewRequest = async (req, res) => {
             await page.setViewport({
               width: cardWidth,
               height: cardHeight,
-              deviceScaleFactor: 1,
+              // deviceScaleFactor: 1,
             });
             /* await page.exposeFunction('onMessageReceivedEvent', e => {
               console.log('got event outer', e);
