@@ -28,17 +28,12 @@ process.on('uncaughtException', _warn);
 process.on('unhandledRejection', _warn);
 
 let browser;
-const serverPromise = _makePromise();
-let cbIndex = 0;
-const cbs = {};
-
 (async () => {
 browser = await browserManager.getBrowser();
 ticketManager = browserManager.makeTicketManager(4);
+})();
 
 const _handleCardPreviewRequest = async (req, res) => {
-  await serverPromise;
-
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
@@ -47,7 +42,7 @@ const _handleCardPreviewRequest = async (req, res) => {
   const match = u.pathname.match(/^\/([0-9]+)$/);
   const tokenId = parseInt(match?.[1] || '', 10);
   const {query = {}} = u;
-  const {ext} = query;
+  const {ext = 'png'} = query;
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext)) {
     const cache = !query['nocache'];
     const key = `cards/${tokenId}/${ext}`;
@@ -69,10 +64,6 @@ const _handleCardPreviewRequest = async (req, res) => {
       res.end(o.Body);
     } else {
       await ticketManager.lock();
-
-      const p = _makePromise()
-      const index = ++cbIndex;
-      cbs[index] = p.accept.bind(p);
 
       let page;
       try {
