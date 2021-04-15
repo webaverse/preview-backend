@@ -4,6 +4,7 @@ const http = require('http');
 const https = require('https');
 const { _handlePreviewRequest } = require('./routes/preview.js')
 const { _handleLandPreviewRequest } = require('./routes/land-preview.js')
+const { _handleCardPreviewRequest } = require('./routes/card-preview.js')
 const { _handleBakeRequest } = require('./routes/bake.js')
 
 let CERT, PRIVKEY
@@ -23,6 +24,9 @@ const _req = protocol => (req, res) => {
       return;
     } else if (o.host === 'land-preview.exokit.org') {
       _handleLandPreviewRequest(req, res);
+      return;
+    } else if (o.host === 'card-preview.exokit.org') {
+      _handleCardPreviewRequest(req, res);
       return;
     } else if (o.host === 'bake.exokit.org') {
       _handleBakeRequest(req, res);
