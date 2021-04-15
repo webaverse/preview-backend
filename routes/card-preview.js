@@ -71,11 +71,14 @@ const _handleCardPreviewRequest = async (req, res) => {
 
       let page;
       try {
-        // console.log('preview 3');
         page = await browser.newPage();
-        // console.log('preview 4');
+        const p = _makePromise();
         page.on('console', e => {
           console.log(e);
+          const text = e.text();
+          if (/cards done render/i.test(text)) {
+            p.accept();
+          }
         });
         page.on('error', err => {
           console.log(err);
@@ -93,33 +96,35 @@ const _handleCardPreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            // console.log('load page 1');
+            console.log('load page 1');
             await page.setViewport({
               width: cardWidth,
               height: cardHeight,
             });
-            const p = _makePromise();
-            await page.exposeFunction('onMessageReceivedEvent', e => {
+            /* await page.exposeFunction('onMessageReceivedEvent', e => {
+              console.log('got event outer', e);
               p.accept(e.data);
-            });
-            // console.log('load page 2');
+            }); */
+            console.log('load page 2');
             await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}`);
-            // console.log('load page 3');
+            console.log('load page 3');
             
-            function listenFor(type) {
+            /* function listenFor(type) {
               return page.evaluateOnNewDocument(type => {
+                console.log('add listener', type, !!window.onMessageReceivedEvent);
                 window.addEventListener(type, e => {
+                  console.log('got event inner', type, !!window.onMessageReceivedEvent, e);
                   window.onMessageReceivedEvent({type, data: e.data});
                 });
               }, type);
             }
-            await listenFor('message'); // Listen for "message" custom event on page load.
+            await listenFor('message'); // Listen for "message" custom event on page load. */
             
-            // console.log('load page 4');
+            console.log('load page 4');
             
             await p;
             
-            // console.log('load page 5');
+            console.log('load page 5');
             
             const b = await page.screenshot({
               type: (() => {
@@ -130,7 +135,7 @@ const _handleCardPreviewRequest = async (req, res) => {
                 }
               })(),
             });
-            // console.log('load page 6');
+            console.log('load page 6');
             
             res.setHeader('Content-Type', contentType);
             res.end(b);
