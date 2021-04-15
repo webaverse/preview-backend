@@ -134,6 +134,7 @@ const _handleCardPreviewRequest = async (req, res) => {
                   default: return null;
                 }
               })(),
+              omitBackground: true,
             });
             console.log('load page 6');
             
