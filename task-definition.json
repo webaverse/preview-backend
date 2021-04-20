@@ -15,7 +15,7 @@
         }
       },
       "command": [
-        "/bin/sh -c \"npm run start-proxied\""
+        "/bin/sh -c \"npm run start-container\""
       ],
       "entryPoint": [
         "sh",
