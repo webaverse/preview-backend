@@ -1,5 +1,5 @@
 const renderTimeout = 30 * 1000;
 
-export {
+module.exports = {
   renderTimeout,
 };
