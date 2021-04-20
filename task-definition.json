@@ -25,7 +25,7 @@
         {
           "hostPort": 80,
           "protocol": "tcp",
-          "containerPort": 80
+          "containerPort": 8080
         }
       ],
       "linuxParameters": null,
