@@ -125,9 +125,10 @@ const _handlePreviewRequest = async (req, res) => {
   if (spec) {
     const {url, hash, ext, type, height, width} = spec;
     
-    console.log('preview request', {hash, ext, type, cache, height, width});
-    
     const key = `${hash}/${ext}/${type}`;
+
+    console.log('preview request', {hash, ext, type, cache, height, width, key});
+    
     const o = cache ? await (async () => {
       try {
         return await getObject(
