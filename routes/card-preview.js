@@ -95,7 +95,7 @@ const _handleCardPreviewRequest = async (req, res) => {
         let timeout;
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
-            reject(new Error('timed out'));
+            reject(new Error('timed out: ' + JSON.stringify({tokenId, ext, w, cardWidth, cardHeight}, null, 2)));
           }, renderTimeout);
         });
 

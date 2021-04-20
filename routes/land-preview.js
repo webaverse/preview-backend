@@ -151,7 +151,7 @@ const _handleLandPreviewRequest = async (req, res) => {
         let timeout;
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
-            reject(new Error('timed out'));
+            reject(new Error('timed out: ' + JSON.stringify({z, x, y, e, r}, null, 2)));
           }, renderTimeout);
         });
 

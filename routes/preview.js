@@ -170,7 +170,7 @@ const _handlePreviewRequest = async (req, res) => {
         let timeout;
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
-            reject(new Error('timed out'));
+            reject(new Error('timed out: ' + JSON.stringify(spec, null, 2)));
           }, renderTimeout);
         });
 
