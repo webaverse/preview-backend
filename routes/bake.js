@@ -84,6 +84,9 @@ const _handleBakeRequest = async (req, res) => {
   const {pathname, query: {u, e, nocache} = {}} = url.parse(req.url, true);
   if (u && e) {
     const cache = nocache === undefined;
+    
+    console.log('bake preview request', {u, e});
+    
     const key = `${u}/${e}`;
     const contentType = 'model/gltf-binary';
     const o = cache ? await (async () => {

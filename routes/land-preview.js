@@ -104,6 +104,9 @@ const _handleLandPreviewRequest = async (req, res) => {
   if (spec) {
     const {z, x, y} = spec;
     const {e, r} = query;
+    
+    console.log('land preview request', {z, x, y, e, r});
+    
     const key = `parcels/${z}/${x}/${y}/${e || ''}/${r || ''}`;
     const o = cache ? await (async () => {
       try {
