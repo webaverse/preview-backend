@@ -1,6 +1,6 @@
 {
   "ipcMode": null,
-  "executionRoleArn": "arn:aws:iam::907263135169:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::907263135169:role/github-action",
   "containerDefinitions": [
     {
       "dnsSearchDomains": null,
