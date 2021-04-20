@@ -15,7 +15,7 @@
         }
       },
       "command": [
-        "/bin/sh -c \"npm start\""
+        "/bin/sh -c \"npm run start-proxied\""
       ],
       "entryPoint": [
         "sh",

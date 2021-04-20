@@ -18,4 +18,4 @@ EXPOSE 443
 EXPOSE 8080
 EXPOSE 8443
 
-CMD [ "npm", "run start-proxied" ]
+CMD [ "npm", "run start-container" ]
