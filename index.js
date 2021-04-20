@@ -65,8 +65,12 @@ process.on('unhandledRejection', _warn);
 server.listen(process.env.HTTP_PORT || PORT);
 console.log(`http://127.0.0.1:${PORT}`);
 
-if (CERT !== undefined) {
-  const HTTPS_PORT = 443
+if (CERT && PRIVKEY) {
+  const HTTPS_PORT = 443;
   server2.listen(process.env.HTTPS_PORT || HTTPS_PORT);
   console.log(`https://127.0.0.1:${HTTPS_PORT}`);
 }
+
+process.on('exit', (code, signal) => {
+  console.warn('process exited', {code, signal});
+});
