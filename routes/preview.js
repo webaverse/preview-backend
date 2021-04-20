@@ -202,6 +202,14 @@ const _handlePreviewRequest = async (req, res) => {
             if (cache) {
               const b = Buffer.concat(bs);
               bs.length = 0;
+
+              console.log('put preview result', {
+                bucketName: bucketNames.preview,
+                key,
+                length: b.length,
+                contentType,
+              });
+
               await putObject(
                 bucketNames.preview,
                 key,
