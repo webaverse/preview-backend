@@ -15,7 +15,7 @@
         }
       },
       "command": [
-        "/bin/sh -c \"cd preview-backend && npm start\""
+        "/bin/sh -c \"npm start\""
       ],
       "entryPoint": [
         "sh",
