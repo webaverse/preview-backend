@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.814.0",
+    "etag": "^1.8.1",
     "express": "^4.17.1",
     "mime": "^2.4.7",
     "puppeteer": "^8.0.0"
