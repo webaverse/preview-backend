@@ -51,7 +51,7 @@
       "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "public.ecr.aws/z5i7x6k7/preview-backend",
+      "image": "907263135169.dkr.ecr.us-west-1.amazonaws.com/preview-backend",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
