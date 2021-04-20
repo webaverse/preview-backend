@@ -49,12 +49,18 @@ const _req = protocol => (req, res) => {
 };
 
 const server = http.createServer(_req('http:'));
+server.on('error', err => {
+  console.warn('http server error', err);
+});
 let server2;
 if (CERT && PRIVKEY) {
   server2 = https.createServer({
     cert: CERT,
     key: PRIVKEY,
   }, _req('https:'));
+  server2.on('error', err => {
+    console.warn('https server error', err);
+  });
 }
 const _warn = err => {
   console.warn('uncaught: ' + err.stack);
