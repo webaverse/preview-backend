@@ -51,7 +51,7 @@ const putObject = (bucket, key, data, type) => {
     })
 }
 
-function uploadFromStream(bucket, key, type) {
+/* function uploadFromStream(bucket, key, type) {
   const pass = new stream.PassThrough();
   const params = { Bucket: bucket, Key: key, Body: pass };
   if (type) {
@@ -66,10 +66,10 @@ function uploadFromStream(bucket, key, type) {
     }
   });
   return pass;
-}
+} */
 
 module.exports = {
   getObject,
   putObject,
-  uploadFromStream,
+  // uploadFromStream,
 }
