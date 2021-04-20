@@ -39,11 +39,11 @@
       "secrets": [
         {
           "name": "accessKeyId",
-          "valueFrom": "arn:aws:secretsmanager:us-west-1:907263135169:secret:aws-DzWDKN"
+          "valueFrom": "arn:aws:secretsmanager:us-west-1:907263135169:secret:webaverse-server-accessKeyId-V18zlB"
         },
         {
           "name": "secretAccessKey",
-          "valueFrom": "arn:aws:secretsmanager:us-west-1:907263135169:secret:aws-DzWDKN"
+          "valueFrom": "arn:aws:secretsmanager:us-west-1:907263135169:secret:webaverse-server-secretAccessKey-S4B2sZ"
         }
       ],
       "dockerSecurityOptions": null,
