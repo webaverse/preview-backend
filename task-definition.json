@@ -30,7 +30,16 @@
       ],
       "linuxParameters": null,
       "cpu": 0,
-      "environment": [],
+      "environment": [
+        {
+            "name": "accessKeyId",
+            "value": "$ACCESS_KEY_ID"
+        },
+        {
+            "name": "secretAccessKey",
+            "value": "$SECRET_ACCESS_KEY"
+        }
+      ],
       "resourceRequirements": null,
       "ulimits": null,
       "dnsServers": null,
