@@ -30,22 +30,22 @@
       ],
       "linuxParameters": null,
       "cpu": 0,
-      "environment": [
-        {
-            "name": "accessKeyId",
-            "value": "$ACCESS_KEY_ID"
-        },
-        {
-            "name": "secretAccessKey",
-            "value": "$SECRET_ACCESS_KEY"
-        }
-      ],
+      "environment": [],
       "resourceRequirements": null,
       "ulimits": null,
       "dnsServers": null,
       "mountPoints": [],
       "workingDirectory": null,
-      "secrets": null,
+      "secrets": [
+        {
+          "name": "accessKeyId",
+          "valueFrom": "arn:aws:secretsmanager:us-west-1:907263135169:secret:aws-DzWDKN"
+        },
+        {
+          "name": "secretAccessKey",
+          "valueFrom": "arn:aws:secretsmanager:us-west-1:907263135169:secret:aws-DzWDKN"
+        }
+      ],
       "dockerSecurityOptions": null,
       "memory": null,
       "memoryReservation": null,
