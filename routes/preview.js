@@ -140,6 +140,7 @@ const _handlePreviewRequest = async (req, res) => {
     if (o) {
       // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
       res.setHeader('Content-Type', contentType);
+      res.setHeader('ETag', o.ETag);
       res.end(o.Body);
     } else {
       await ticketManager.lock();
