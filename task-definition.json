@@ -95,7 +95,7 @@
             ],
             "dependsOn": [
                 {
-                    "containerName": "container-name",
+                    "containerName": "preview-backend",
                     "condition": "COMPLETE"
                 }
             ],
