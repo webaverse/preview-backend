@@ -4,11 +4,23 @@ const fs = require('fs');
 
 let accessKeyId, secretAccessKey;
 if (fs.existsSync('./config.json')){
+  console.log('reading secrets from config.json...');
   accessKeyId = require('./config.json').accessKeyId;
   secretAccessKey = require('./config.json').secretAccessKey;
+  if (accessKeyId && secretAccessKey) {
+    console.log('read secrets from config.json ok');
+  } else {
+    throw new Error('read secrets from config.json failed');
+  }
 } else {
+  console.log('reading secrets from env...');
   accessKeyId = process.env.accessKeyId;
   secretAccessKey = process.env.secretAccessKey;
+  if (accessKeyId && secretAccessKey) {
+    console.log('read secrets from env ok');
+  } else {
+    throw new Error('read secrets from env failed');
+  }
 }
 
 const awsConfig = new AWS.Config({
