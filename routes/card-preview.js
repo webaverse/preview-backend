@@ -4,6 +4,7 @@ const mime = require('mime');
 
 const {getObject, putObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
+const {renderTimeout} = require('../constants.js');
 
 const bucketNames = {
   preview: 'preview-exokit-org',
@@ -95,7 +96,7 @@ const _handleCardPreviewRequest = async (req, res) => {
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
             reject(new Error('timed out'));
-          }, 10 * 1000);
+          }, renderTimeout);
         });
 
         await Promise.race([

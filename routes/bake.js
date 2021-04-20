@@ -6,6 +6,7 @@ const http = require('http');
 
 const {getObject, putObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
+const {renderTimeout} = require('../constants.js');
 
 const PREVIEW_HOST = '127.0.0.1';
 const PREVIEW_PORT = 8997;
@@ -131,7 +132,7 @@ const _handleBakeRequest = async (req, res) => {
         const t = new Promise((accept, reject) => {
           timeout = setTimeout(() => {
             reject(new Error('timed out'));
-          }, 30 * 1000);
+          }, renderTimeout);
         });
 
         await Promise.race([
