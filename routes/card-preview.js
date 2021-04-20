@@ -49,6 +49,9 @@ const _handleCardPreviewRequest = async (req, res) => {
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
     const cardHeight = cardWidth / 2.5 * 3.5;
     const cache = !query['nocache'];
+    
+    console.log('card preview request', {tokenId, ext, w, cardWidth, cardHeight});
+    
     const key = `cards/${tokenId}/${ext}`;
     const o = cache ? await (async () => {
       try {
