@@ -205,9 +205,17 @@ const _handlePreviewRequest = async (req, res) => {
               b = Buffer.concat(bs);
               bs.length = 0;
             } else {
+              let localWidth = parseInt(width, 10);
+              if (isNaN(localWidth)) {
+                localWidth = 1024;
+              }
+              let localHeight = parseInt(height, 10);
+              if (isNaN(localHeight)) {
+                localHeight = 768;
+              }
               await page.setViewport({
-                width: 1024,
-                height: 768,
+                width: localWidth,
+                height: localHeight,
               });
               await page.goto(url);
               
