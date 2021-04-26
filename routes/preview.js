@@ -1,6 +1,7 @@
 const url = require('url');
 const http = require('http');
 const mime = require('mime');
+const fetch = require('node-fetch');
 
 const {getObject, putObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
@@ -223,11 +224,13 @@ const _handlePreviewRequest = async (req, res) => {
               
               if (ogImageMetaValue) {
                 const ogImageUrl = new URL(ogImageMetaValue, url + (!/\/$/.test(url) ? '/' : ''));
-                console.log('got og image', url, ogImageMetaValue, ogImageUrl);
-                await page.goto(ogImageUrl);
+                // console.log('got og image', url, ogImageMetaValue, ogImageUrl);
+                // await page.goto(ogImageUrl);
+                const res = await fetch(ogImageUrl);
+                b = await res.buffer();
+              } else {
+                b = await page.screenshot({});
               }
-
-              b = await page.screenshot({});
 
               res.setHeader('Content-Type', contentType);
               res.end(b);
