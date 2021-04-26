@@ -219,8 +219,15 @@ const _handlePreviewRequest = async (req, res) => {
               });
               await page.goto(url);
               
-              b = await page.screenshot({
-              });
+              const ogImageMetaValue = await page.$eval("head > meta[property='og:image']", element => element.content);
+              
+              if (ogImageMetaValue) {
+                const ogImageUrl = new URL(ogImageMetaValue, url + (!/\/$/.test(url) ? '/' : ''));
+                console.log('got og image', url, ogImageMetaValue, ogImageUrl);
+                await page.goto(ogImageUrl);
+              }
+
+              b = await page.screenshot({});
 
               res.setHeader('Content-Type', contentType);
               res.end(b);
