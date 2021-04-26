@@ -140,7 +140,7 @@ const _handlePreviewRequest = async (req, res) => {
         return null;
       }
     })() : null;
-    const contentType = mime.getType(ext);
+    const contentType = mime.getType(type);
     if (o) {
       // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
       res.setHeader('Content-Type', contentType);
@@ -177,32 +177,48 @@ const _handlePreviewRequest = async (req, res) => {
 
         await Promise.race([
           (async () => {
-            await page.goto(`https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index);
-            const {
-              req: proxyReq,
-              res: proxyRes,
-            } = await p;
+            let b;
+            if (ext !== 'html') {
+              const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
+              await page.goto(u);
+              const {
+                req: proxyReq,
+                res: proxyRes,
+              } = await p;
 
-            res.setHeader('Content-Type', contentType);
-            proxyReq.pipe(res);
+              res.setHeader('Content-Type', contentType);
+              proxyReq.pipe(res);
 
-            const bs = [];
-            proxyReq.on('data', d => {
-              bs.push(d);
-            });
-            proxyReq.on('error', err => {
-              console.warn(err);
-            });
-            await new Promise((accept, reject) => {
-              proxyReq.on('end', accept);
-            });
-            proxyRes.end();
-            // page.close();
+              const bs = [];
+              proxyReq.on('data', d => {
+                bs.push(d);
+              });
+              proxyReq.on('error', err => {
+                console.warn(err);
+              });
+              await new Promise((accept, reject) => {
+                proxyReq.on('end', accept);
+              });
+              proxyRes.end();
+              // page.close();
+              
+              b = Buffer.concat(bs);
+              bs.length = 0;
+            } else {
+              await page.setViewport({
+                width: 1024,
+                height: 768,
+              });
+              await page.goto(url);
+              
+              b = await page.screenshot({
+              });
+
+              res.setHeader('Content-Type', contentType);
+              res.end(b);
+            }
 
             if (cache) {
-              const b = Buffer.concat(bs);
-              bs.length = 0;
-
               console.log('put preview result', {
                 bucketName: bucketNames.preview,
                 key,
