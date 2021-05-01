@@ -65,12 +65,13 @@ const putObject = (bucket, key, data, type) => {
 
 const deleteObject = (bucket, key) => {
     return new Promise(async (resolve, reject) => {
-        const params = { Bucket: bucket, Key: key };
+        const params = { Bucket: bucket, Key: key, ReturnValues: 'ALL_OLD' };
         s3.deleteObject(params, (error, data) => {
             if (error) {
                 reject(error)
             }
             else {
+              console.log('got data', data);
                 resolve(data)
             }
         });
