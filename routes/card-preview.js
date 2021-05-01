@@ -173,7 +173,7 @@ const _handleCardPreviewRequest = async (req, res) => {
         }
       }
     } else if (req.method === 'DELETE') {
-      console.log('preview cards delete request', {hash, ext, type, cache, height, width, key});
+      console.log('preview cards delete request', {hash, ext, key});
       
       await deleteObject(
         bucketNames.preview,
