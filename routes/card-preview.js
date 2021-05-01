@@ -50,7 +50,9 @@ const _handleCardPreviewRequest = async (req, res) => {
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
     const key = `cards/${tokenId}/${ext}`;
     
-    if (req.method === 'GET') {    
+    if (req.method === 'OPTIONS') {
+      res.end();
+    } else if (req.method === 'GET') {
       const cardHeight = cardWidth / 2.5 * 3.5;
       const cache = !query['nocache'];
       
