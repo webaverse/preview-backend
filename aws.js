@@ -63,6 +63,20 @@ const putObject = (bucket, key, data, type) => {
     })
 }
 
+const deleteObject = (bucket, key) => {
+    return new Promise(async (resolve, reject) => {
+        const params = { Body: data, Bucket: bucket, Key: key };
+        s3.deleteObject(params, (error, data) => {
+            if (error) {
+                reject(error)
+            }
+            else {
+                resolve(data)
+            }
+        });
+    })
+}
+
 /* function uploadFromStream(bucket, key, type) {
   const pass = new stream.PassThrough();
   const params = { Bucket: bucket, Key: key, Body: pass };
@@ -83,5 +97,6 @@ const putObject = (bucket, key, data, type) => {
 module.exports = {
   getObject,
   putObject,
+  deleteObject,
   // uploadFromStream,
 }
