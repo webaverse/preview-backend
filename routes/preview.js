@@ -127,7 +127,9 @@ const _handlePreviewRequest = async (req, res) => {
     const {url, hash, ext, type, height, width} = spec;
     const key = `${hash}/${ext}/${type}`;
     
-    if (req.method === 'GET') {
+    if (req.method === 'OPTIONS') {
+      res.end();
+    } else if (req.method === 'GET') {
       console.log('preview get request', {hash, ext, type, cache, height, width, key});
       
       const o = cache ? await (async () => {
