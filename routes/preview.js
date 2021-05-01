@@ -266,7 +266,7 @@ const _handlePreviewRequest = async (req, res) => {
         }
       }
     } else if (req.method === 'DELETE') {
-      console.log('preview delete request', {hash, ext, type, cache, height, width, key});
+      console.log('preview delete request', {hash, ext, key});
       
       await deleteObject(
         bucketNames.preview,
