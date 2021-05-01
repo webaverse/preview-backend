@@ -125,145 +125,163 @@ const _handlePreviewRequest = async (req, res) => {
   const cache = !query['nocache'];
   if (spec) {
     const {url, hash, ext, type, height, width} = spec;
-    
     const key = `${hash}/${ext}/${type}`;
-
-    console.log('preview request', {hash, ext, type, cache, height, width, key});
     
-    const o = cache ? await (async () => {
-      try {
-        return await getObject(
-          bucketNames.preview,
-          key,
-        );
-      } catch(err) {
-        // console.warn(err);
-        return null;
-      }
-    })() : null;
-    const contentType = mime.getType(type);
-    if (o) {
-      // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('ETag', o.ETag);
-      res.end(o.Body);
-    } else {
-      await ticketManager.lock();
+    if (req.method === 'GET') {
+      console.log('preview get request', {hash, ext, type, cache, height, width, key});
+      
+      const o = cache ? await (async () => {
+        try {
+          return await getObject(
+            bucketNames.preview,
+            key,
+          );
+        } catch(err) {
+          // console.warn(err);
+          return null;
+        }
+      })() : null;
+      const contentType = mime.getType(type);
+      if (o) {
+        // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('ETag', o.ETag);
+        res.end(o.Body);
+      } else {
+        await ticketManager.lock();
 
-      const p = _makePromise()
-      const index = ++cbIndex;
-      cbs[index] = p.accept.bind(p);
+        const p = _makePromise()
+        const index = ++cbIndex;
+        cbs[index] = p.accept.bind(p);
 
-      let page;
-      try {
-        // console.log('preview 3');
-        page = await browser.newPage();
-        // console.log('preview 4');
-        page.on('console', e => {
-          console.log(e);
-        });
-        page.on('error', err => {
-          console.log(err);
-        });
-        page.on('pageerror', err => {
-          console.log(err);
-        });
+        let page;
+        try {
+          // console.log('preview 3');
+          page = await browser.newPage();
+          // console.log('preview 4');
+          page.on('console', e => {
+            console.log(e);
+          });
+          page.on('error', err => {
+            console.log(err);
+          });
+          page.on('pageerror', err => {
+            console.log(err);
+          });
 
-        let timeout;
-        const t = new Promise((accept, reject) => {
-          timeout = setTimeout(() => {
-            reject(new Error('timed out: ' + JSON.stringify(spec, null, 2)));
-          }, renderTimeout);
-        });
+          let timeout;
+          const t = new Promise((accept, reject) => {
+            timeout = setTimeout(() => {
+              reject(new Error('timed out: ' + JSON.stringify(spec, null, 2)));
+            }, renderTimeout);
+          });
 
-        await Promise.race([
-          (async () => {
-            let b;
-            if (ext !== 'html') {
-              const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
-              await page.goto(u);
-              const {
-                req: proxyReq,
-                res: proxyRes,
-              } = await p;
+          await Promise.race([
+            (async () => {
+              let b;
+              if (ext !== 'html') {
+                const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
+                await page.goto(u);
+                const {
+                  req: proxyReq,
+                  res: proxyRes,
+                } = await p;
 
-              res.setHeader('Content-Type', contentType);
-              proxyReq.pipe(res);
+                res.setHeader('Content-Type', contentType);
+                proxyReq.pipe(res);
 
-              const bs = [];
-              proxyReq.on('data', d => {
-                bs.push(d);
-              });
-              proxyReq.on('error', err => {
-                console.warn(err);
-              });
-              await new Promise((accept, reject) => {
-                proxyReq.on('end', accept);
-              });
-              proxyRes.end();
-              // page.close();
-              
-              b = Buffer.concat(bs);
-              bs.length = 0;
-            } else {
-              let localWidth = parseInt(width, 10);
-              if (isNaN(localWidth)) {
-                localWidth = 1024;
-              }
-              let localHeight = parseInt(height, 10);
-              if (isNaN(localHeight)) {
-                localHeight = 768;
-              }
-              await page.setViewport({
-                width: localWidth,
-                height: localHeight,
-              });
-              await page.goto(url);
-              
-              const ogImageMetaValue = await page.$eval("head > meta[property='og:image']", element => element.content);
-              
-              if (ogImageMetaValue) {
-                const ogImageUrl = new URL(ogImageMetaValue, url + (!/\/$/.test(url) ? '/' : ''));
-                // console.log('got og image', url, ogImageMetaValue, ogImageUrl);
-                // await page.goto(ogImageUrl);
-                const res = await fetch(ogImageUrl);
-                b = await res.buffer();
+                const bs = [];
+                proxyReq.on('data', d => {
+                  bs.push(d);
+                });
+                proxyReq.on('error', err => {
+                  console.warn(err);
+                });
+                await new Promise((accept, reject) => {
+                  proxyReq.on('end', accept);
+                });
+                proxyRes.end();
+                // page.close();
+                
+                b = Buffer.concat(bs);
+                bs.length = 0;
               } else {
-                b = await page.screenshot({});
+                let localWidth = parseInt(width, 10);
+                if (isNaN(localWidth)) {
+                  localWidth = 1024;
+                }
+                let localHeight = parseInt(height, 10);
+                if (isNaN(localHeight)) {
+                  localHeight = 768;
+                }
+                await page.setViewport({
+                  width: localWidth,
+                  height: localHeight,
+                });
+                await page.goto(url);
+                
+                const ogImageMetaValue = await page.$eval("head > meta[property='og:image']", element => element.content);
+                
+                if (ogImageMetaValue) {
+                  const ogImageUrl = new URL(ogImageMetaValue, url + (!/\/$/.test(url) ? '/' : ''));
+                  // console.log('got og image', url, ogImageMetaValue, ogImageUrl);
+                  // await page.goto(ogImageUrl);
+                  const res = await fetch(ogImageUrl);
+                  b = await res.buffer();
+                } else {
+                  b = await page.screenshot({});
+                }
+
+                res.setHeader('Content-Type', contentType);
+                res.end(b);
               }
 
-              res.setHeader('Content-Type', contentType);
-              res.end(b);
-            }
+              if (cache) {
+                console.log('put preview result', {
+                  bucketName: bucketNames.preview,
+                  key,
+                  length: b.length,
+                  contentType,
+                });
 
-            if (cache) {
-              console.log('put preview result', {
-                bucketName: bucketNames.preview,
-                key,
-                length: b.length,
-                contentType,
-              });
+                await putObject(
+                  bucketNames.preview,
+                  key,
+                  b,
+                  contentType,
+                );
+              }
+            })(),
+            t,
+          ]);
+          clearTimeout(timeout);
+        } catch (err) {
+          console.warn(err.stack);
+        } finally {
+          ticketManager.unlock();
 
-              await putObject(
-                bucketNames.preview,
-                key,
-                b,
-                contentType,
-              );
-            }
-          })(),
-          t,
-        ]);
-        clearTimeout(timeout);
-      } catch (err) {
-        console.warn(err.stack);
-      } finally {
-        ticketManager.unlock();
-
-        if (page) {
-          page.close();
+          if (page) {
+            page.close();
+          }
         }
       }
+    } else if (req.method === 'DELETE') {
+      console.log('preview delete request', {hash, ext, type, cache, height, width, key});
+      
+      await deleteObject(
+        bucketNames.preview,
+        key
+      );
+      
+      res.setHeader('Content-Type', 'application/json');
+      const j = {
+        ok: true,
+      };
+      const s = JSON.stringify(j);
+      res.end(s);
+    } else {
+      res.statusCode = 404;
+      res.end();
     }
   } else {
     res.statusCode = 404;
