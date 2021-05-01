@@ -3,7 +3,7 @@ const http = require('http');
 const mime = require('mime');
 const fetch = require('node-fetch');
 
-const {getObject, putObject} = require('../aws.js');
+const {getObject, putObject, deleteObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
 const {renderTimeout} = require('../constants.js');
 
