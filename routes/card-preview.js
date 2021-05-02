@@ -43,9 +43,10 @@ const _handleCardPreviewRequest = async (req, res) => {
 
   const u = url.parse(req.url, true);
   const {query = {}} = u;
-  const {id = 0 + '', w = 500 + '', name = '', description = '', hash = '', ext = '', image = ''} = query;
+  const {id = 0 + '', w = 500 + '', name = '', description = '', hash = '', ext = '', image = '', minterUsername = '', minterAvatarPreview = ''} = query;
   const tokenId = parseInt(id, 10);
   const cardWidth = parseInt(w, 10);
+  
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
     const key = `cards/${tokenId}/${ext}`;
     
@@ -115,10 +116,38 @@ const _handleCardPreviewRequest = async (req, res) => {
                 p.accept(e.data);
               }); */
               console.log('load page 2');
-              await page.goto(`https://cards.webaverse.com/?t=${tokenId}&w=${cardWidth}`, {
+
+              const qs = {
+                t: tokenId,
+                w: cardWidth,
+                name,
+                description,
+                image,
+                hash,
+                ext: 'jpg', // ext here means output content-type, not asset
+                minterUsername,
+                minterAvatarPreview,
+              };
+              let src = `https://cards.webaverse.com/?`;
+              let first = true;
+              for (const k in qs) {
+                const v = qs[k];
+                if (v !== undefined) {
+                  if (first) {
+                    first = false;
+                  } else {
+                    src += '&';
+                  }
+                  src += `${k}=${v}`;
+                }
+              }
+              
+              console.log('load page 3', src);
+
+              await page.goto(src, {
                 waitUntil: 'networkidle0',
               });
-              console.log('load page 3');
+              console.log('load page 4');
               
               /* function listenFor(type) {
                 return page.evaluateOnNewDocument(type => {
@@ -131,11 +160,11 @@ const _handleCardPreviewRequest = async (req, res) => {
               }
               await listenFor('message'); // Listen for "message" custom event on page load. */
               
-              console.log('load page 4');
+              console.log('load page 5');
               
               // await p;
               
-              console.log('load page 5');
+              console.log('load page 6');
               
               const b = await page.screenshot({
                 type: (() => {
@@ -147,7 +176,7 @@ const _handleCardPreviewRequest = async (req, res) => {
                 })(),
                 omitBackground: true,
               });
-              console.log('load page 6');
+              console.log('load page 7');
               
               res.setHeader('Content-Type', contentType);
               res.end(b);
