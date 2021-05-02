@@ -183,6 +183,7 @@ const _handlePreviewRequest = async (req, res) => {
               let b;
               if (ext !== 'html') {
                 const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
+                console.log('rendering preview url', u);
                 await page.goto(u);
                 const {
                   req: proxyReq,
