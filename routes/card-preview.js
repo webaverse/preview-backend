@@ -43,7 +43,7 @@ const _handleCardPreviewRequest = async (req, res) => {
 
   const u = url.parse(req.url, true);
   const {query = {}} = u;
-  const {id = 0 + '', w = 500 + '', ext = 'png'} = query;
+  const {id = 0 + '', w = 500 + '', name = '', description = '', hash = '', ext = '', image = ''} = query;
   const tokenId = parseInt(id, 10);
   const cardWidth = parseInt(w, 10);
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
