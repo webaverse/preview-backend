@@ -48,7 +48,7 @@ const _handleCardPreviewRequest = async (req, res) => {
   const cardWidth = parseInt(w, 10);
   
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
-    const key = `cards/${tokenId}/${ext}`;
+    const key = `cards/${tokenId}/${ext}/${w}`;
     
     if (req.method === 'OPTIONS') {
       res.end();
