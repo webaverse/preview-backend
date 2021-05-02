@@ -43,7 +43,7 @@ const _handleCardPreviewRequest = async (req, res) => {
 
   const u = url.parse(req.url, true);
   const {query = {}} = u;
-  const {t = 0 + '', w = 500 + '', name = '', description = '', hash = '', ext = '', image = '', minterUsername = '', minterAvatarPreview = ''} = query;
+  const {t = 0 + '', w = 500 + '', name, description, hash, ext, image, minterUsername, minterAvatarPreview} = query;
   const tokenId = parseInt(t, 10);
   const cardWidth = parseInt(w, 10);
   
