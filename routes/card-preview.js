@@ -53,7 +53,7 @@ const _handleCardPreviewRequest = async (req, res) => {
     if (req.method === 'OPTIONS') {
       res.end();
     } else if (req.method === 'GET') {
-      const cardHeight = cardWidth / 2.5 * 3.5;
+      const cardHeight = Math.floor(cardWidth / 2.5 * 3.5);
       const cache = !query['nocache'];
       
       console.log('card preview get request 1', {tokenId, ext, w, cardWidth, cardHeight});
