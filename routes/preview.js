@@ -65,6 +65,22 @@ const server = http.createServer((req, res) => {
       res.statusCode = 404;
       res.end();
     }
+  } else if (req.method === 'DELETE') {
+    const match = req.url.match(/^\/([0-9]+)/);
+    if (match) {
+      const index = parseInt(match[1], 10);
+      const cb = cbs[index];
+      if (cb) {
+        delete cbs[index];
+        cb({req, res});
+      } else {
+        res.statusCode = 404;
+        res.end();
+      }
+    } else {
+      res.statusCode = 404;
+      res.end();
+    }
   } else {
     res.statusCode = 404;
     res.end();
