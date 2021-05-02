@@ -42,10 +42,9 @@ const _handleCardPreviewRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', '*');
 
   const u = url.parse(req.url, true);
-  const match = u.pathname.match(/^\/([0-9]+)$/);
-  const tokenId = parseInt(match?.[1] || '', 10);
   const {query = {}} = u;
-  const {w = 500 + '', ext = 'png'} = query;
+  const {tid = 0 + '', w = 500 + '', ext = 'png'} = query;
+  const tokenId = parseInt(tid, 10);
   const cardWidth = parseInt(w, 10);
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
     const key = `cards/${tokenId}/${ext}`;
