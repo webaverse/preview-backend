@@ -97,6 +97,11 @@ const _handlePreviewRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
 
+  if (req.method === 'OPTIONS') {
+    res.end();
+    return;
+  }
+
   const u = url.parse(req.url, true);
   const spec = (() => {
     const match = u.pathname.match(/^\/\[([^\]]+)\.([^\].]+)\]\/([^\.]+)\.(.+)$/);
@@ -143,9 +148,7 @@ const _handlePreviewRequest = async (req, res) => {
     const {url, hash, ext, type, height, width} = spec;
     const key = `${hash}/${ext}/${type}`;
     
-    if (req.method === 'OPTIONS') {
-      res.end();
-    } else if (req.method === 'GET') {
+    if (req.method === 'GET') {
       console.log('preview get request', {hash, ext, type, cache, height, width, key});
       
       const o = cache ? await (async () => {
