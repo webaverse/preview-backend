@@ -40,6 +40,11 @@ const _handleCardPreviewRequest = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
+  
+  if (req.method === 'OPTIONS') {
+    res.end();
+    return;
+  }
 
   const u = url.parse(req.url, true);
   const {query = {}} = u;
@@ -50,9 +55,7 @@ const _handleCardPreviewRequest = async (req, res) => {
   if (!isNaN(tokenId) && ['png', 'jpg'].includes(ext) && !isNaN(cardWidth)) {
     const key = `cards/${tokenId}/${ext}/${w}`;
     
-    if (req.method === 'OPTIONS') {
-      res.end();
-    } else if (req.method === 'GET') {
+    if (req.method === 'GET') {
       const cardHeight = Math.floor(cardWidth / 2.5 * 3.5);
       const cache = !query['nocache'];
       
