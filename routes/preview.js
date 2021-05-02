@@ -145,6 +145,8 @@ const _handlePreviewRequest = async (req, res) => {
       })() : null;
       const contentType = mime.getType(type);
       if (o) {
+        console.log('preview get from cache', key, contentType, o.Body.byteLength);
+        
         // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
         res.setHeader('Content-Type', contentType);
         res.setHeader('ETag', o.ETag);
