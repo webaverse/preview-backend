@@ -56,7 +56,7 @@ const server = http.createServer((req, res) => {
       // console.log('callback server 2', req.url, index, !!cb);
       if (cb) {
         delete cbs[index];
-        cb({req, res});
+        cb.accept({req, res});
       } else {
         res.statusCode = 404;
         res.end();
@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
       const cb = cbs[index];
       if (cb) {
         delete cbs[index];
-        cb({req, res});
+        cb.reject({req, res});
       } else {
         res.statusCode = 404;
         res.end();
@@ -172,7 +172,7 @@ const _handlePreviewRequest = async (req, res) => {
 
         const p = _makePromise()
         const index = ++cbIndex;
-        cbs[index] = p.accept.bind(p);
+        cbs[index] = p;
 
         let page;
         try {
@@ -203,29 +203,62 @@ const _handlePreviewRequest = async (req, res) => {
                 const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
                 console.log('rendering preview url', u);
                 await page.goto(u);
-                const {
-                  req: proxyReq,
-                  res: proxyRes,
-                } = await p;
-
-                res.setHeader('Content-Type', contentType);
-                proxyReq.pipe(res);
-
-                const bs = [];
-                proxyReq.on('data', d => {
-                  bs.push(d);
-                });
-                proxyReq.on('error', err => {
-                  console.warn(err);
-                });
-                await new Promise((accept, reject) => {
-                  proxyReq.on('end', accept);
-                });
-                proxyRes.end();
-                // page.close();
                 
-                b = Buffer.concat(bs);
-                bs.length = 0;
+                // wait for response from page
+                let proxyReq, proxyRes, err;
+                try {
+                  const o = await p;
+                  proxyReq = o.req;
+                  proxyRes = o.res;
+                  err = null;
+                } catch (e) {
+                  proxyReq = e.req;
+                  proxyRes = e.res;
+                  
+                  const bs = [];
+                  proxyReq.on('data', d => {
+                    bs.push(d);
+                  });
+                  proxyReq.on('error', err => {
+                    console.warn(err);
+                  });
+                  await new Promise((accept, reject) => {
+                    proxyReq.on('end', accept);
+                  });
+                  proxyRes.end();
+                  // page.close();
+                  
+                  b = Buffer.concat(bs);
+                  bs.length = 0;
+                  
+                  const s = b.slice(0, 4096).toString('utf8');
+                  err = new Error('preview failed: ' + s);
+                }
+                console.log('got err', !!err);
+                if (!err) {
+                  res.setHeader('Content-Type', contentType);
+                  proxyReq.pipe(res);
+
+                  const bs = [];
+                  proxyReq.on('data', d => {
+                    bs.push(d);
+                  });
+                  proxyReq.on('error', err => {
+                    console.warn(err);
+                  });
+                  await new Promise((accept, reject) => {
+                    proxyReq.on('end', accept);
+                  });
+                  proxyRes.end();
+                  // page.close();
+                  
+                  b = Buffer.concat(bs);
+                  bs.length = 0;
+                } else {
+                  proxyRes.end();
+
+                  throw err;
+                }
               } else {
                 let localWidth = parseInt(width, 10);
                 if (isNaN(localWidth)) {
@@ -277,7 +310,10 @@ const _handlePreviewRequest = async (req, res) => {
           ]);
           clearTimeout(timeout);
         } catch (err) {
-          console.warn(err.stack);
+          console.warn('preview error', err.stack);
+          
+          res.status = 500;
+          res.end(err.stack);
         } finally {
           ticketManager.unlock();
 
