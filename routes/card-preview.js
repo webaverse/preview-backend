@@ -56,7 +56,7 @@ const _handleCardPreviewRequest = async (req, res) => {
       const cardHeight = cardWidth / 2.5 * 3.5;
       const cache = !query['nocache'];
       
-      console.log('card preview get request', {tokenId, ext, w, cardWidth, cardHeight});
+      console.log('card preview get request 1', {tokenId, ext, w, cardWidth, cardHeight});
       
       const o = cache ? await (async () => {
         try {
@@ -70,6 +70,7 @@ const _handleCardPreviewRequest = async (req, res) => {
         }
       })() : null;
       const contentType = mime.getType(ext);
+      console.log('card preview get request 2', !!o);
       if (o) {
         // res.setHeader('Content-Type', o.ContentType || 'application/octet-stream');
         res.setHeader('Content-Type', contentType);
