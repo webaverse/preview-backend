@@ -205,6 +205,10 @@ const _handlePreviewRequest = async (req, res) => {
               if (ext !== 'html') {
                 const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
                 console.log('rendering preview url', u);
+                page.browser().version()
+                  .then(version => {
+                    console.log('chrome version', version);
+                  });
                 await page.goto(u);
                 
                 // wait for response from page
