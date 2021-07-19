@@ -8,3 +8,9 @@ The preview server is a headless chromium instance that generates screenshots an
 2. Request gets sent to the preview server, checks S3 cache if there's a preview already.
 3. If there's no preview, the server will ask the API about the token and fetch the IPFS content
 4. The files from the IPFS hash get rendered using Puppeteer, exported as previews.
+
+# Local screenshots
+
+Run https://github.com/webaverse/app, then:
+
+https://127.0.0.1:3001/screenshot.html?url=https://webaverse.github.io/assets/male.vrm&ext=vrm&type=png
