@@ -3,12 +3,14 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 
 let accessKeyId, secretAccessKey;
+let hasCacheSupport = false;
 if (fs.existsSync('./config.json')){
   console.log('reading secrets from config.json...');
   accessKeyId = require('./config.json').accessKeyId;
   secretAccessKey = require('./config.json').secretAccessKey;
   if (accessKeyId && secretAccessKey) {
-    console.log('read secrets from config.json ok');
+    console.log('read secrets from config.json ok');    
+    hasCacheSupport = true;
   } else {
     throw new Error('read secrets from config.json failed');
   }
@@ -17,9 +19,10 @@ if (fs.existsSync('./config.json')){
   accessKeyId = process.env.accessKeyId;
   secretAccessKey = process.env.secretAccessKey;
   if (accessKeyId && secretAccessKey) {
-    console.log('read secrets from env ok');
+    console.log('read secrets from env ok');    
+    hasCacheSupport = true;
   } else {
-    throw new Error('read secrets from env failed');
+    console.warn('read secrets from env failed');
   }
 }
 
@@ -96,6 +99,7 @@ const deleteObject = (bucket, key) => {
 } */
 
 module.exports = {
+  hasCacheSupport,
   getObject,
   putObject,
   deleteObject,
