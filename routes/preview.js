@@ -3,7 +3,7 @@ const http = require('http');
 const mime = require('mime');
 const fetch = require('node-fetch');
 
-const {getObject, putObject, deleteObject} = require('../aws.js');
+const {hasCacheSupport, getObject, putObject, deleteObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
 const {renderTimeout} = require('../constants.js');
 
@@ -143,7 +143,7 @@ const _handlePreviewRequest = async (req, res) => {
     }
   })();
   const {query = {}} = u;
-  const cache = !query['nocache'];
+  const cache = hasCacheSupport && !query['nocache'];
   if (spec) {
     const {url, hash, ext, type, height, width} = spec;
     const key = `${hash}/${ext}/${type}`;
