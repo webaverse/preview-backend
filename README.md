@@ -14,3 +14,5 @@ The preview server is a headless chromium instance that generates screenshots an
 Run https://github.com/webaverse/app, then:
 
 https://127.0.0.1:3001/screenshot.html?url=https://webaverse.github.io/assets/male.vrm&ext=vrm&type=png
+
+Test
