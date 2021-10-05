@@ -1,21 +1,22 @@
-FROM buildkite/puppeteer:latest
+FROM buildkite/puppeteer
+ENV LAST_UPDATED 20160605T165400
+LABEL description="webaverse-preview-backend"
 
-# Create app directory
-WORKDIR /usr/src/app
+# Copy source code
+COPY . /app
 
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Change working directory
+WORKDIR /app
 
-COPY package.json .
-COPY package-lock.json .
-
+# Install dependencies
+RUN apt update -y
+RUN apt install sudo -y
+RUN npm install forever -g
 RUN npm install
 
-# Bundle app source
-COPY . .
-
+# Expose API port to the outside
 EXPOSE 80
 EXPOSE 443
-EXPOSE 8080
-EXPOSE 8443
 
-CMD [ "npm", "run start-container" ]
+# Launch application
+CMD forever -a -l /host/forever.log -o stdout.log -e stderr.log index.js
