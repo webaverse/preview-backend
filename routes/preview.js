@@ -2,7 +2,7 @@ const url = require('url');
 const http = require('http');
 const mime = require('mime');
 const fetch = require('node-fetch');
-
+const {parseQuery} = require('../utils.js');
 const {hasCacheSupport, getObject, putObject, deleteObject} = require('../aws.js');
 const browserManager = require('../browser-manager.js');
 const {renderTimeout} = require('../constants.js');
@@ -104,42 +104,19 @@ const _handlePreviewRequest = async (req, res) => {
 
   const u = url.parse(req.url, true);
   const spec = (() => {
-    const match = u.pathname.match(/^\/\[([^\]]+)\.([^\].]+)\]\/([^\.]+)\.(.+)$/);
-    if (match) {
-      const url = match[1] + '.' + match[2];
-      const hash = match[1];
-      const ext = match[2].toLowerCase();
-      const type = match[4].toLowerCase();
-      const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
-      const height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
-      return {
-        url,
-        hash,
-        ext,
-        type,          
-        width,
-        height
-      };
-    } else {
-      const match = u.pathname.match(/^\/([^\.]+)\.([^\/]+)\/([^\.]+)\.(.+)$/);
-      if (match) {
-        const hash = match[1];
-        const ext = match[2].toLowerCase();
-        const type = match[4].toLowerCase();
-        const url = `${storageHost}/ipfs/${hash}`;
-        const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
-        const height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
-        return {
-          url,
-          hash,
-          ext,
-          type,
-          width,
-          height
-        };
-      } else {
-        return null;
-      }
+
+    let {
+      url, hash, ext, type, height, width
+    } = parseQuery(u.search);
+
+    if(!url && !hash){
+      return null;
+    }else if(!url){
+      url = `${storageHost}/ipfs/${hash}`;
+    }
+    
+    return {
+      url, hash, ext, type, height, width
     }
   })();
   const {query = {}} = u;
