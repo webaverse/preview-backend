@@ -109,7 +109,9 @@ const _handlePreviewRequest = async (req, res) => {
       url, hash, ext, type, height, width
     } = parseQuery(u.search);
 
-    if(!url){
+    if(!url && !hash){
+      return null;
+    }else if(!url){
       url = `${storageHost}/ipfs/${hash}`;
     }
     
