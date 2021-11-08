@@ -18,8 +18,24 @@ const makePromise = () => {
   p.reject = reject;
   return p;
 };
+
+function parseQuery(queryString) {
+  const query = {};
+  const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+  for (let i = 0; i < pairs.length; i++) {
+    const pair = pairs[i].split('=');
+    const k = decodeURIComponent(pair[0]);
+    if (k) {
+      const v = decodeURIComponent(pair[1] || '');
+      query[k] = v;
+    }
+  }
+  return query;
+}
+
 module.exports = {
   _setCorsHeaders,
   getExt,
   makePromise,
+  parseQuery
 }
