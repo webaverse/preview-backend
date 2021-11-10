@@ -52,5 +52,6 @@ phases:
       - kubectl get svc preview-server
       - export loadbalancer=$(kubectl get svc preview-server -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
       - echo http://${loadbalancer}
+      - kubectl get pods -o wide
       - curl -k -s http://${loadbalancer}
 
