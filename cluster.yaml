@@ -9,13 +9,5 @@ nodeGroups:
   - name: ng-1-workers
     labels: { role: workers }
     instanceType: t2.large
-    desiredCapacity: 10
-    privateNetworking: true
-  - name: ng-2-builders
-    labels: { role: builders }
-    instanceType: t2.large
     desiredCapacity: 2
     privateNetworking: true
-    iam:
-      withAddonPolicies:
-        imageBuilder: true

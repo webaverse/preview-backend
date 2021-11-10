@@ -14,6 +14,7 @@ phases:
       - curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/v0.72.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
       - mv -v /tmp/eksctl /usr/local/bin
       - chmod +x /usr/local/bin/eksctl
+      - AWS_ACCOUNT_ID=684910554524
 
   pre_build:
     commands:
@@ -45,5 +46,5 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG
       - echo Push the latest image to cluster
-      - kubectl apply -f eks_cicd/deployment.yaml
-      - kubectl rollout restart -f eks_cicd/deployment.yaml
+      - kubectl apply -f deployment.yaml
+      - kubectl rollout restart -f deployment.yaml
