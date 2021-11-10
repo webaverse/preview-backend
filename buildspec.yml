@@ -48,3 +48,4 @@ phases:
       - kubectl apply -f ./eks/deployment.yaml
       - kubectl rollout -h
       - kubectl rollout restart -f ./eks/deployment.yaml
+      - kubectl apply -f ./eks/service.yaml
