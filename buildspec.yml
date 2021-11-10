@@ -36,14 +36,14 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
-      - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t ecrrepository-app:$IMAGE_TAG .
-      - docker tag ecrrepository-app:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG 
+      # - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t ecrrepository-app:$IMAGE_TAG .
+      # - docker tag ecrrepository-app:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG 
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG
+      # - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG
       - echo Push the latest image to cluster
       - kubectl apply -f ./eks/deployment.yaml
       - kubectl rollout restart ./eks/deployment.yaml
