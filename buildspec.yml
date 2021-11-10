@@ -54,6 +54,8 @@ phases:
       - kubectl get pods -o wide
       - while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
       - kubectl get pods -o wide
+      - kubectl get endpoints
+      - kubectl get deployments
       - kubectl logs -l app=preview-server-app
       - echo http://${loadbalancer}
       - curl -k http://${loadbalancer}
