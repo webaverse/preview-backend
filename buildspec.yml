@@ -54,6 +54,11 @@ phases:
       - echo http://${loadbalancer}
       - kubectl get pods -o wide
       - sleep 30
+      - kubectl get pods -o wide
+      - sleep 30
+      - kubectl get pods -o wide
+      - sleep 30
+      - kubectl get pods -o wide
       - kubectl logs -l app=preview-server-app
       - curl -k -s http://${loadbalancer}
 
