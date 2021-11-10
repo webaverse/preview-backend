@@ -50,4 +50,6 @@ phases:
       - kubectl rollout restart -f ./eks/deployment.yaml
       - kubectl apply -f ./eks/service.yaml
       - kubectl get svc preview-server
+      - export loadbalancer=$(kubectl -n my-nginx get svc my-nginx -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+      - curl -k -s http://${loadbalancer}
 
