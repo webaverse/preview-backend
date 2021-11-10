@@ -51,7 +51,6 @@ phases:
       - kubectl apply -f ./eks/service.yaml
       - kubectl get svc preview-server
       - export loadbalancer=$(kubectl get svc preview-server -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
-      - echo http://${loadbalancer}
       - kubectl get pods -o wide
       - sleep 30
       - kubectl get pods -o wide
@@ -60,5 +59,6 @@ phases:
       - sleep 30
       - kubectl get pods -o wide
       - kubectl logs -l app=preview-server-app
-      - curl -k -s http://${loadbalancer}
+      - echo http://${loadbalancer}
+      - curl -k http://${loadbalancer}
 
