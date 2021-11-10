@@ -46,4 +46,5 @@ phases:
       # - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG
       - echo Push the latest image to cluster
       - kubectl apply -f ./eks/deployment.yaml
+      - kubectl rollout -h
       - kubectl rollout restart ./eks/deployment.yaml
