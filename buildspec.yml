@@ -49,5 +49,5 @@ phases:
       - kubectl rollout -h
       - kubectl rollout restart -f ./eks/deployment.yaml
       - kubectl apply -f ./eks/service.yaml
-      - kubectl -n preview-server get svc preview-server
+      - kubectl get svc preview-server
 
