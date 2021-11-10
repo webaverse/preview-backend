@@ -15,6 +15,7 @@ phases:
       - mv -v /tmp/eksctl /usr/local/bin
       - chmod +x /usr/local/bin/eksctl
       - AWS_ACCOUNT_ID=684910554524
+      - IMAGE_TAG=latest
 
   pre_build:
     commands:
@@ -30,9 +31,7 @@ phases:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
       - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app
-      - docker pull $REPOSITORY_URI:$IMAGE_TAG
       
-
   build:
     commands:
       - echo Build started on `date`
