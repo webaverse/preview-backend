@@ -18,7 +18,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon EKS...
-      - ll
+      - ls -l
       - chmod a+x ./cluster-setup.sh
       - sh ./cluster-setup.sh
       - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name preview-server

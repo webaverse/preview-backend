@@ -1,3 +1,3 @@
 echo "Inside cluster setup"
-ll
+ls -l
 eksctl
