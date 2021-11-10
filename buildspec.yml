@@ -21,7 +21,7 @@ phases:
     commands:
       - echo Logging in to Amazon EKS...
       - ls -l
-      - chmod a+x ./cluster-setup.sh
+      - chmod a+x ./eks/cluster-setup.sh
       - sh ./eks/cluster-setup.sh
       - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name preview-server
       - echo check config 
