@@ -10,7 +10,7 @@ metadata:
   name: preview-server
 spec:
   selector:
-    app: preview-server
+    app: preview-server-app
   type: LoadBalancer
   ports:
    -  protocol: TCP
