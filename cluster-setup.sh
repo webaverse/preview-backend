@@ -1,3 +1,4 @@
 echo "Inside cluster setup"
 ls -l
-eksctl
+#Create cluster if don't exist
+aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name preview-server || eksctl create cluster -f cluster.yaml
