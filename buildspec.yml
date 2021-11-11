@@ -14,7 +14,7 @@ phases:
       - curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/v0.72.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
       - mv -v /tmp/eksctl /usr/local/bin
       - chmod +x /usr/local/bin/eksctl
-      - AWS_ACCOUNT_ID=684910554524
+      - AWS_ACCOUNT_ID=907263135169
       - IMAGE_TAG=latest
 
   pre_build:
@@ -30,20 +30,23 @@ phases:
       - kubectl get svc
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/preview-server
       
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
-      # - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t ecrrepository-app:$IMAGE_TAG .
-      # - docker tag ecrrepository-app:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG 
+      - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t preview-server:$IMAGE_TAG .
+      - docker tag preview-server:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/preview-server:$IMAGE_TAG 
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      # - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ecrrepository-app:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/preview-server:$IMAGE_TAG
+      - kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.10/nvidia-device-plugin.yml
+      - kubectl apply -f nvidia-smi-pod.yaml
+      - while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
       - echo Push the latest image to cluster
       - kubectl apply -f ./eks/deployment.yaml
       - kubectl rollout -h
@@ -59,4 +62,5 @@ phases:
       - kubectl logs -l app=preview-server-app
       - echo http://${loadbalancer}
       - curl -k http://${loadbalancer}
+
 

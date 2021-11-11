@@ -19,11 +19,12 @@ spec:
           image: 684910554524.dkr.ecr.us-west-2.amazonaws.com/ecrrepository-app:latest
           resources:
             requests:
-              cpu: "100m"
-              memory: "500Mi"
-            limits:
-              cpu: "200m"
+              cpu: "300m"
               memory: "1024Mi"
+            limits:
+              cpu: "500m"
+              memory: "2048Mi"
+              nvidia.com/gpu: 1
           ports:
             - containerPort: 80
               name: http

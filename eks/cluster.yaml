@@ -8,6 +8,10 @@ metadata:
 nodeGroups:
   - name: ng-1-workers
     labels: { role: workers }
-    instanceType: t2.large
-    desiredCapacity: 2
+    instanceType: p2.xlarge
+    desiredCapacity: 1
     privateNetworking: true
+    Parameters:
+        NodeAutoScalingGroupDesiredCapacity: 2
+        NodeAutoScalingGroupMaxSize: 3
+        NodeAutoScalingGroupMinSize: 1
