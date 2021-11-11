@@ -8,6 +8,7 @@ metadata:
 nodeGroups:
   - name: ng-1-workers
     labels: { role: workers }
-    instanceType: p2.xlarge
+    instanceType: t2.xlarge
+    ami: ami-0154536465365f6e8
     desiredCapacity: 1
     privateNetworking: true
