@@ -11,7 +11,6 @@ nodeGroups:
     instanceType: p2.xlarge
     desiredCapacity: 1
     privateNetworking: true
-    Parameters:
-        NodeAutoScalingGroupDesiredCapacity: 2
-        NodeAutoScalingGroupMaxSize: 3
-        NodeAutoScalingGroupMinSize: 1
+    NodeAutoScalingGroupDesiredCapacity: 2
+    NodeAutoScalingGroupMaxSize: 3
+    NodeAutoScalingGroupMinSize: 1
