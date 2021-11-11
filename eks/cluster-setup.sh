@@ -1,4 +1,5 @@
 echo "Inside cluster setup"
+echo $AWS_DEFAULT_REGION
 ls -l
 #Create cluster if don't exist
 aws ec2 describe-availability-zones --all-availability-zones
