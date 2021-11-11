@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: preview-server
-          image: 684910554524.dkr.ecr.us-west-2.amazonaws.com/ecrrepository-app:latest
+          image: 907263135169.dkr.ecr.us-west-1.amazonaws.com/preview-server
           resources:
             requests:
               cpu: "300m"
