@@ -23,27 +23,27 @@ phases:
       - ls -l
       - chmod a+x ./eks/cluster-setup.sh
       - sh ./eks/cluster-setup.sh
-      - aws eks --region us-west-1 update-kubeconfig --name preview-server
+      - aws eks --region us-west-2 update-kubeconfig --name preview-server
       - echo check config 
       - kubectl config view --minify
       - echo check kubectl access
       - kubectl get svc
       - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login --region us-west-1 --no-include-email)
-      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/preview-server
+      - $(aws ecr get-login --region us-west-2 --no-include-email)
+      - REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server
       
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
       - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t preview-server:$IMAGE_TAG .
-      - docker tag preview-server:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/preview-server:$IMAGE_TAG 
+      - docker tag preview-server:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG 
 
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-1.amazonaws.com/preview-server:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
       - kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.10/nvidia-device-plugin.yml
       - kubectl apply -f nvidia-smi-pod.yaml
       - while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
