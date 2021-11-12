@@ -46,16 +46,15 @@ phases:
       #- docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
       - kubectl create -f ./eks/gpu.yml
       - kubectl apply -f ./eks/nvidia-smi-pod.yaml
-      - while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
+      #- while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
       - echo Push the latest image to cluster
       - kubectl apply -f ./eks/deployment.yaml
-      - kubectl rollout -h
       - kubectl rollout restart -f ./eks/deployment.yaml
       - kubectl apply -f ./eks/service.yaml
       - kubectl get svc preview-server
       - export loadbalancer=$(kubectl get svc preview-server -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
       - kubectl get pods -o wide
-      - while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+      - while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
       - kubectl get pods -o wide
       - kubectl get endpoints
       - kubectl get deployments
