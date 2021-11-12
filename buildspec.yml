@@ -44,7 +44,7 @@ phases:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       #- docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
-      - kubectl create -f ./eks/gpu.yml
+      - kubectl create -f ./eks/gpu.yml || echo ""
       - kubectl apply -f ./eks/nvidia-smi-pod.yaml
       #- while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
       - echo Push the latest image to cluster
