@@ -42,6 +42,9 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - kubectl apply -f eksFullAccess.yml
+      - kubectl describe clusterrole.rbac.authorization.k8s.io/eks-console-dashboard-full-access-clusterrole
+      - kubectl describe clusterrolebinding.rbac.authorization.k8s.io/eks-console-dashboard-full-access-binding
       - kubectl apply -f aws-auth-cm.yaml
       - echo Pushing the Docker image...
       #- docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
