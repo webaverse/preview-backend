@@ -9,6 +9,6 @@ nodeGroups:
   - name: ng-1-workers
     labels: { role: workers }
     instanceType: t2.xlarge
-    ami: ami-0154536465365f6e8
+    ami: ami-0ffc5d631f3f9fc20
     desiredCapacity: 1
     privateNetworking: true
