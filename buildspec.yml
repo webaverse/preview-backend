@@ -42,6 +42,7 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - kubectl apply -f aws-auth-cm.yaml
       - echo Pushing the Docker image...
       #- docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
       - kubectl create -f ./eks/gpu.yml || echo ""
