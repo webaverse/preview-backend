@@ -10,3 +10,5 @@ data:
       groups:
         - system:bootstrappers
         - system:nodes
+        - eks-console-dashboard-full-access-group
+
