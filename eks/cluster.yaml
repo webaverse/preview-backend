@@ -11,7 +11,6 @@ nodeGroups:
     labels: { role: workers }
     instanceType: p3.2xlarge
     ami: ami-0154536465365f6e8
-    version: 1.21
     desiredCapacity: 1
     privateNetworking: true
     availabilityZones: ["us-west-2a", "us-west-2b","us-west-2c"]
