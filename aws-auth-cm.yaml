@@ -2,13 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: aws-auth
-  namespace: default
+  namespace: kube-system
 data:
   mapUsers: |
     - userarn: arn:aws:iam::907263135169:user/kaneki.ken
       username: kaneki.ken
       groups:
-        - system:bootstrappers
-        - system:nodes
-        - eks-console-dashboard-full-access-group
+        - system:masters
 
