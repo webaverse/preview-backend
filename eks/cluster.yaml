@@ -4,7 +4,7 @@ kind: ClusterConfig
 metadata:
   name: preview-server
   region: us-west-2
-  version: 1.21
+  version: "1.21"
 
 nodeGroups:
   - name: ng-1-workers
