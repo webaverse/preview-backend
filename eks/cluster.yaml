@@ -4,6 +4,7 @@ kind: ClusterConfig
 metadata:
   name: preview-server
   region: us-west-2
+  version: "1.21"
 
 nodeGroups:
   - name: ng-1-workers
@@ -12,3 +13,4 @@ nodeGroups:
     ami: ami-0154536465365f6e8
     desiredCapacity: 1
     privateNetworking: true
+    availabilityZones: ["us-west-2a", "us-west-2b","us-west-2c"]
