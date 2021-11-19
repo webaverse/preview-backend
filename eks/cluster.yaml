@@ -11,5 +11,5 @@ nodeGroups:
     labels: { role: workers }
     instanceType: p3.2xlarge
     # ami: ami-0154536465365f6e8
-    desiredCapacity: 1
+    desiredCapacity: 2
     privateNetworking: true
