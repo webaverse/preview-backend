@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: pod-rc
+spec:
+  replicas: 5
+  selector:
+    app: pod-rc
+  template:
+    metadata:
+      name: pod-rc
+      labels:
+        app: pod-rc
+    spec:
+      containers:
+        - name: preview-server
+          image: 907263135169.dkr.ecr.us-west-2.amazonaws.com/preview-server
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 70
+            timeoutSeconds: 10
+            failureThreshold: 10
+
