@@ -36,8 +36,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
-      #- docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t preview-server:$IMAGE_TAG .
-      #- docker tag preview-server:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG 
+      - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t preview-server:$IMAGE_TAG .
+      - docker tag preview-server:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG 
 
   post_build:
     commands:
@@ -47,13 +47,15 @@ phases:
       - kubectl describe clusterrolebinding.rbac.authorization.k8s.io/eks-console-dashboard-full-access-binding
       - kubectl apply -f aws-auth-cm.yaml
       - echo Pushing the Docker image...
-      #- docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/preview-server:$IMAGE_TAG
       # - kubectl create -f ./eks/gpu.yml || echo ""
       # - kubectl apply -f ./eks/nvidia-smi.yml
       #- while [[ $(kubectl get pods -l app=preview-server-app -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1 && kubectl get pods -o wide; done
       - echo Push the latest image to cluster
       - kubectl apply -f ./eks/deployment.yaml
       - kubectl rollout restart -f ./eks/deployment.yaml
+      # - kubectl apply -f replication-controller.yml 
+      # - kubectl rollout restart -f replication-controller.yml 
       - kubectl apply -f ./eks/service.yaml
       - kubectl get svc preview-server
       - export loadbalancer=$(kubectl get svc preview-server -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
