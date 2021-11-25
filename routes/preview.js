@@ -91,7 +91,10 @@ server.listen(PREVIEW_PORT, PREVIEW_HOST, serverPromise.accept.bind(serverPromis
 })();
 
 const _handlePreviewRequest = async (req, res) => {
+  
+  console.time('Server Promise')
   await serverPromise;
+  console.timeEnd('Server Promise')
 
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
@@ -148,6 +151,8 @@ const _handlePreviewRequest = async (req, res) => {
         res.setHeader('ETag', o.ETag);
         res.end(o.Body);
       } else {
+        console.time('Render Time')
+
         await ticketManager.lock();
 
         const p = _makePromise()
@@ -292,6 +297,8 @@ const _handlePreviewRequest = async (req, res) => {
             })(),
             t,
           ]);
+          console.timeEnd('Render Time')
+
           clearTimeout(timeout);
         } catch (err) {
           console.warn('preview error', err.stack);
