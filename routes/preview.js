@@ -185,7 +185,7 @@ const _handlePreviewRequest = async (req, res) => {
             (async () => {
               let b;
               if (ext !== 'html') {
-                const u = `https://app.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
+                const u = `https://staging.webaverse.com/screenshot.html?url=${url}&hash=${hash}&ext=${ext}&type=${type}&width=${width}&height=${height}&dst=http://${PREVIEW_HOST}:${PREVIEW_PORT}/` + index;
                 console.log('rendering preview url', u);
                 page.browser().version()
                   .then(version => {
