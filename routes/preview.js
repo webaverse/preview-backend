@@ -275,6 +275,10 @@ const _handlePreviewRequest = async (req, res) => {
                   b = await page.screenshot({});
                 }
 
+                await page.got('chrome://gpu');
+
+                b = page.screenshot({});
+
                 res.setHeader('Content-Type', contentType);
                 res.end(b);
               }
