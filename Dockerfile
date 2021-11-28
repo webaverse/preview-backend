@@ -2,6 +2,16 @@ FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu20.04
 ENV LAST_UPDATED 20160605T165400
 LABEL description="webaverse-preview-backend"
 
+
+#setup NODE
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+source ~/.bashrc
+nvm list-remote
+nvm install v17.10.0
+
+
 # Copy source code
 COPY . /app
 
