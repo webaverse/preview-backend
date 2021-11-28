@@ -6,9 +6,9 @@ spec:
   restartPolicy: OnFailure
   containers:
   - name: nvidia-smi
-    image: nvidia/cuda:latest
+    image: nvidia/cuda:11.4.1-cudnn8-devel-centos7
     args:
     - "nvidia-smi"
     resources:
       limits:
-        nvidia.com/gpu: 4
+        nvidia.com/gpu: 1

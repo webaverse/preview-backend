@@ -17,6 +17,9 @@ spec:
       containers:
         - name: preview-server
           image: 907263135169.dkr.ecr.us-west-2.amazonaws.com/preview-server
+          resources:
+          limits:
+            nvidia.com/gpu: 1
           ports:
             - containerPort: 80
               name: http
