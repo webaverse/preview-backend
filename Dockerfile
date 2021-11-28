@@ -1,4 +1,4 @@
-FROM buildkite/puppeteer
+FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu20.04
 ENV LAST_UPDATED 20160605T165400
 LABEL description="webaverse-preview-backend"
 
