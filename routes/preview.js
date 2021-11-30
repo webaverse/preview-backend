@@ -105,34 +105,28 @@ const _handlePreviewRequest = async (req, res) => {
   const u = url.parse(req.url, true);
   const spec = (() => {
 
-    let {
-      url, hash, ext, type, height, width
-    } = parseQuery(u.search);
-
-    if(!url && !hash){
-      const match = u.pathname.match(/^\/([^\.]+)\.([^\/]+)\/([^\.]+)\.(.+)$/);
-      if (match) {
-        const hash = match[1];
-        const ext = match[2].toLowerCase();
-        const type = match[4].toLowerCase();
-        const url = `${storageHost}/ipfs/${hash}`;
-        const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
-        const height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
-        return {
-          url,
-          hash,
-          ext,
-          type,
-          width,
-          height
+    if(!u.search){
+        const match = u.pathname.match(/^\/([^\.]+)\.([^\/]+)\/([^\.]+)\.(.+)$/);
+        if (match) {
+          let hash = match[1];
+          let ext = match[2].toLowerCase();
+          let type = match[4].toLowerCase();
+          let url = `${storageHost}/ipfs/${hash}`;
+          let width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
+          let height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
+          return {
+            url,
+            hash,
+            ext,
+            type,
+            width,
+            height
+          }
         }
-      }
-      return null;
+    }else if(u.search){
+      return parseQuery(u.search);
     }
-    
-    return {
-      url, hash, ext, type, height, width
-    }
+    return null;
   })();
   const {query = {}} = u;
   const cache = hasCacheSupport && !query['nocache'];
@@ -141,7 +135,7 @@ const _handlePreviewRequest = async (req, res) => {
     const key = `${hash}/${ext}/${type}`;
     
     if (req.method === 'GET') {
-      console.log('preview get request', {hash, ext, type, cache, height, width, key});
+      console.log('preview get request', {url, hash, ext, type, cache, height, width, key});
       
       const o = cache ? await (async () => {
         try {
