@@ -20,6 +20,9 @@ const makePromise = () => {
 };
 
 function parseQuery(queryString) {
+  if(!queryString){
+    return {};
+  }
   const query = {};
   const pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
   for (let i = 0; i < pairs.length; i++) {

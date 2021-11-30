@@ -110,9 +110,24 @@ const _handlePreviewRequest = async (req, res) => {
     } = parseQuery(u.search);
 
     if(!url && !hash){
+      const match = u.pathname.match(/^\/([^\.]+)\.([^\/]+)\/([^\.]+)\.(.+)$/);
+      if (match) {
+        const hash = match[1];
+        const ext = match[2].toLowerCase();
+        const type = match[4].toLowerCase();
+        const url = `${storageHost}/ipfs/${hash}`;
+        const width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
+        const height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
+        return {
+          url,
+          hash,
+          ext,
+          type,
+          width,
+          height
+        }
+      }
       return null;
-    }else if(!url){
-      url = `${storageHost}/ipfs/${hash}`;
     }
     
     return {
