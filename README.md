@@ -35,7 +35,7 @@ Webaverse App
 
 #### GLTF/GLB/VRM Loader
 
-Uses: [MetaverseFile](https://github.com/webaverse/metaversefile) 
+Uses: [Totum](https://github.com/webaverse/Totum) 
 
 ```js
 
@@ -53,7 +53,7 @@ Uses: [MetaverseFile](https://github.com/webaverse/metaversefile)
 
 #### VRM Loader
 
-Uses: [MetaverseFile](https://github.com/webaverse/metaversefile) 
+Uses: [Totum](https://github.com/webaverse/totum) 
 
 ```js
 
