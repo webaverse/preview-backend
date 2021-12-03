@@ -21,7 +21,7 @@ Error.stackTraceLimit = 300;
 const _req = protocol => (req, res) => {
   try {
     const o = url.parse(protocol + '//' + (req.headers['host'] || '') + req.url);
-    if (o.host === 'preview.exokit.org') {
+    if (o.host === 'preview.webaverse.com') {
       _handlePreviewRequest(req, res);
       return;
     } else if (o.host === 'land-preview.exokit.org') {
