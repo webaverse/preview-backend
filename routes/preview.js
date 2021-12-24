@@ -111,7 +111,7 @@ const _handlePreviewRequest = async (req, res) => {
           let hash = match[1];
           let ext = match[2].toLowerCase();
           let type = match[4].toLowerCase();
-          let url = `${storageHost}/ipfs/${hash}`;
+          let url = `${storageHost}/${hash}/${hash}.${ext}`;
           let width = match[3]?.match(/(?<=\/)[\w+.-]+.+?(?=x)/)?.[0];
           let height = match[3]?.match(/(?<=x)[\w+.-]+/)?.[0];
           return {
